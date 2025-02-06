@@ -1,0 +1,28 @@
+.banner h1{
+  color: #fff;
+  width: 600px;
+  font-size: 40px;
+}
+
+.banner h3{
+  color: #666666;
+}
+
+.banner h4 {
+  width: 500px;
+  color: #7E7E81;
+}
+
+.banner{
+  padding: 150px 100px;
+}
+
+.container-card{
+  margin-bottom: 15px;
+}
+
+.wrapper-main {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 70px;
+}
