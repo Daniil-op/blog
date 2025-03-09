@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:700,300');
+
+.sign-up-modal p,
+.sign-up-modal .form-checkbox label {
+  font-size: 1em;
+  font-weight: 300;
+  margin-top: 20px;
+}
+
+.sign-up-modal .form-checkbox label {
+  cursor: pointer;
+}
+
+.logotype-text-auth{
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.logotype-auth{
+  display: flex;
+  margin-bottom: 20px;
+  margin-left: 30%;
+}
+
+.logo {
+  fill: #FEFEFE;
+  text-decoration: none;
+}
+
+.logo-container {
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  margin-top: 150px;
+  position: relative;
+  text-align: center;
+}
+
+.sign-up-modal {
+  font-family: 'Roboto', arial, sans-serif;
+  color: #fefefe;
+  border-style: solid;
+  border-width: 10px;
+  border-color: rgb(254, 254, 254);
+  border-radius: 10px;
+  background: radial-gradient(ellipse farthest-corner at right bottom, #fedb37 0%, #FDB931 8%, #9f7928 30%, #8a6e2f 40%, transparent 80%),
+    radial-gradient(ellipse farthest-corner at left top, #ffffff 0%, #ffffac 8%, #d1b464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+  width: 90%;
+  min-width: 400px;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 25px;
+  margin-top: 25px;
+}
+
+.sign-up-modal form {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sign-up-modal input::-webkit-input-placeholder {
+  color: #fefefe;
+  opacity: 1;
+}
+
+.sign-up-modal input:focus::-webkit-input-placeholder {
+  color: #111;
+  opacity: .5;
+  transition: all 0.3s ease;
+}
+
+.sign-up-modal .input-container {
+  margin: 10px;
+}
+
+.sign-up-modal input[type='email'],
+.sign-up-modal input[type='text'],
+.sign-up-modal input[type='password'],
+.sign-up-modal input[type='checkbox']:focus,
+.sign-up-modal input[type='submit']:focus {
+  outline: 0;
+}
+
+.sign-up-modal input[type='email'],
+.sign-up-modal input[type='text'],
+.sign-up-modal input[type='password'] {
+  font-weight: 700;
+  font-size: 1.4em;
+  padding: 10px;
+  border-width: 2px;
+  border-color: rgb(247, 247, 247);
+  border-style: solid;
+  background: #0000004a;
+}
+
+.sign-up-modal input[type='email']:focus,
+.sign-up-modal input[type='text']:focus,
+.sign-up-modal input[type='password']:focus {
+  background: white;
+  transition: all 0.3s ease;
+  color: #222;
+}
+
+.sign-up-modal input[type='checkbox'] {
+  background-color: #fefefe;
+  display: inline-block;
+  position: relative;
+  padding: 6px;
+  margin-left: -6px;
+  margin-top: 25px;
+  cursor: pointer;
+}
+
+.sign-up-modal input[type='checkbox']:checked:after {
+  content: '\2714';
+  font-size: 13px;
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: #111;
+}
+
+.sign-up-modal a {
+  color: #fefefe;
+  text-decoration: none;
+}
+
+.sign-up-modal a:hover {
+  color: #d1b464;
+}
+
+.sign-up-modal input[type='submit'] {
+  font-weight: 700;
+  font-size: 1.8em;
+  color: #111;
+  background: #fefefe;
+  box-shadow: 0px 4px 0px 0px #191919;
+  border-style: none;
+  padding: 10px 50px;
+  margin: 25px 0 15px 0;
+  position: relative;
+  display: inline-block;
+  transition: all .1s linear;
+}
+
+.sign-up-modal input[type='submit']:active {
+  box-shadow: 0 2px 0 #d26a60;
+  transform: translateY(3px);
+  -webkit-transform: translateY(3px);
+  -ms-transform: translateY(3px);
+}
+
+.sign-up-modal #close-modal-button {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background-color: #191919;
+  float: right;
+  position: relative;
+  top: -55px;
+  left: 50px;
+  cursor: pointer;
+}
+
+.sign-up-modal #close-modal-button:before {
+  content: '\2716';
+  font-size: 1.5em;
+  position: relative;
+  top: 8px;
+  left: 16px;
+}

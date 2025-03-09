@@ -16,27 +16,27 @@ function Asside() {
         <ul>
           <div className="article">
           <img className="img-article" src={article_1} alt="" />
-          <a href="/">Facebook</a>
+            <a className="article_a" href="/">Facebook</a>
           </div>
           <div className="article">
             <img className="img-article" src={article_2} alt="" />
-            <a href="/">WhatsApp</a>
+            <a className="article_a" href="/">WhatsApp</a>
           </div>
           <div className="article">
             <img className="img-article" src={article_3} alt="" />
-            <a href="/">Twitter</a>
+            <a className="article_a" href="/">Twitter</a>
           </div>
           <div className="article">
             <img className="img-article" src={article_4} alt="" />
-            <a href="/">Skype</a>
+            <a className="article_a" href="/">Skype</a>
           </div>
           <div className="article">
             <img className="img-article" src={article_5} alt="" />
-            <a href="/">YouTube</a>
+            <a className="article_a" href="/">YouTube</a>
           </div>
           <div className="article">
             <img className="img-article" src={article_6} alt="" />
-            <a href="/">Pinterest</a>
+            <a className="article_a" href="/">Pinterest</a>
           </div>
         </ul>
       </aside>

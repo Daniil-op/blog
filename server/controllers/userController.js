@@ -1,61 +1,128 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const ApiError = require('../error/ApiError');
-const { User, Article } = require('../models/models');
+const { User } = require('../models/models');
 
 const generateJwt = (id, email, role) => {
   return jwt.sign(
     { id, email, role },
     process.env.SECRET_KEY,
     { expiresIn: '24h' }
-  )
-}
+  );
+};
 
 class UserController {
   async registration(req, res, next) {
-    const { email, password, role } = req.body
-    if (!email || !password) {
-      return next(ApiError.badRequest('Некорректный email или password'))
+    try {
+      const { email, username, password } = req.body;
+      console.log('Registration request data:', { email, username, password });
+
+      if (!email || !password) {
+        return next(ApiError.badRequest('Некорректный email или password'));
+      }
+
+      const candidate = await User.findOne({ where: { email } });
+      if (candidate) {
+        return next(ApiError.badRequest('Пользователь с таким email уже существует'));
+      }
+
+      const hashPassword = await bcrypt.hash(password, 5);
+      console.log('Password hashed successfully');
+
+      const user = await User.create({ email, username, role: 'USER', password: hashPassword });
+      console.log('User created successfully:', user);
+
+      const token = generateJwt(user.id, user.email, user.role);
+      return res.json({ token });
+    } catch (error) {
+      console.error('Error during registration:', error);
+      next(ApiError.internal('Ошибка при регистрации'));
     }
-    const candidate = await User.findOne({ where: { email } })
-    if (candidate) {
-      return next(ApiError.badRequest('Пользователь с таким email уже существует'))
-    }
-    const hashPassword = await bcrypt.hash(password, 5)
-    const user = await User.create({ email, role, password: hashPassword })
-    const token = generateJwt(user.id, user.email, user.role)
-    return res.json({ token })
   }
 
   async login(req, res, next) {
-    const { email, password } = req.body
-    const user = await User.findOne({ where: { email } })
-    if (!user) {
-      return next(ApiError.internal('Пользователь не найден'))
+    try {
+      const { email, password } = req.body;
+
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return next(ApiError.internal('Пользователь не найден'));
+      }
+
+      const comparePassword = bcrypt.compareSync(password, user.password);
+      if (!comparePassword) {
+        return next(ApiError.internal('Указан неверный пароль'));
+      }
+
+      const token = generateJwt(user.id, user.email, user.role);
+      return res.json({ token });
+    } catch (error) {
+      console.error('Error during login:', error);
+      next(ApiError.internal('Ошибка при входе'));
     }
-    let comparePassword = bcrypt.compareSync(password, user.password)
-    if (!comparePassword) {
-      return next(ApiError.internal('Указан неверный пароль'))
-    }
-    const token = generateJwt(user.id, user.email, user.role)
-    return res.json({ token })
   }
 
   async check(req, res, next) {
-    const token = generateJwt(req.user.id, req.user.email, req.user.role)
-    return res.json({ token })
+    try {
+      const token = generateJwt(req.user.id, req.user.email, req.user.role);
+      return res.json({ token });
+    } catch (error) {
+      console.error('Error during token check:', error);
+      next(ApiError.internal('Ошибка при проверке токена'));
+    }
   }
 
-  async get(req, res) {
-    const user = await User.findAll()
-    return res.json(user)
+  async get(req, res, next) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      if (!token) {
+        return res.status(401).json({ message: "Not authorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      const user = await User.findOne({ where: { id: decoded.id } });
+
+      if (!user) {
+        return next(ApiError.internal('Пользователь не найден'));
+      }
+
+      return res.json({
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role
+      });
+    } catch (error) {
+      console.error('Error getting user:', error);
+      next(ApiError.internal('Ошибка при получении данных пользователя'));
+    }
   }
 
-  async create(req, res) {
-      let { email, password } = req.body
-      const user = await User.create({ email, password })
-      return res.json(user)
+  async create(req, res, next) {
+    try {
+      // Логика создания (если нужна)
+      // Например, создание администратора или другого типа пользователя
+      const { email, username, password, role } = req.body;
+
+      if (!email || !password) {
+        return next(ApiError.badRequest('Некорректный email или password'));
+      }
+
+      const candidate = await User.findOne({ where: { email } });
+      if (candidate) {
+        return next(ApiError.badRequest('Пользователь с таким email уже существует'));
+      }
+
+      const hashPassword = await bcrypt.hash(password, 5);
+      const user = await User.create({ email, username, role: role || 'USER', password: hashPassword });
+
+      const token = generateJwt(user.id, user.email, user.role);
+      return res.json({ token });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      next(ApiError.internal('Ошибка при создании пользователя'));
+    }
   }
 }
 
-module.exports = new UserController()
+module.exports = new UserController();

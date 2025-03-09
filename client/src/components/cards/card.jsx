@@ -53,6 +53,10 @@ const Card = ({ articleId }) => {
             <p>{article.description}</p>
           </div>
         </article>
+        <div className='open-story'>
+        <a href="#" className="tm-article-snippet__readmore"><span>Читать далее</span></a>
+        <div class="arrowCta"></div>
+        </div>
       </div>
     </div>
   );

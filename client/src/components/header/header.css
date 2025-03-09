@@ -8,10 +8,12 @@
   position: -webkit-sticky;
   position: sticky;
   top: 0;
+  z-index: 1000;
 }
 
 .logotype{
   display: flex;
+  text-decoration: none;
 }
 
 .logotype img{
@@ -45,19 +47,68 @@
 .button-contact{
   cursor: pointer;
   width: 160px;
-  height: 55px;
+  height: 56px;
   border-radius: 10px;
   border-color: #FFD11A;
-  background-color: #FFD11A;
-  margin-left: 400px;
+  border: 1px solid #FFD11A;
+  background: transparent;
+  margin-left: 250px;
+}
+
+.button-contact{
+  text-decoration: none;
+  color: #fff;
+}
+
+.button-contact-login{
+  cursor: pointer;
+  width: 160px;
+  height: 56px;
+  border-radius: 10px;
+  border-color: #FFD11A;
+  border: 1px solid #FFD11A;
+  background: transparent;
+  margin-left: 20px;
+}
+
+.button-contact-login{
+  text-decoration: none;
+  color: #fff;
+}
+
+.button-contact-login p {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .button-contact p{
   color: #fff;
+  text-decoration: none;
   font-weight: 700;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.button-logout{
+  cursor: pointer;
+  width: 160px;
+  height: 56px;
+  border-radius: 10px;
+  border-color: #FFD11A;
+  border: 1px solid #FFD11A;
+  background: transparent;
+  margin-left: 250px;
+}
+
+.button-logout p{
+  color: #fff;
 }
