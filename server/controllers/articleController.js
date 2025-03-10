@@ -6,11 +6,26 @@ const ApiError = require('../error/ApiError');
 class ArticleController {
   async create(req, res, next) {
     try {
-      let { title, description } = req.body;
+      const { title, description } = req.body;
       const { img } = req.files;
-      let fileName = uuid.v4() + ".jpg";
-      img.mv(path.resolve(__dirname, '..', 'static', fileName));
-      const article = await Article.create({ title, description, img: fileName });
+      const userId = req.user.id;
+
+      if (!title || !description || !img) {
+        return next(ApiError.badRequest('Все поля обязательны для заполнения'));
+      }
+
+      const fileName = uuid.v4() + ".jpg";
+      const filePath = path.resolve(__dirname, '..', 'static', fileName);
+
+      await img.mv(filePath);
+
+      const article = await Article.create({
+        title,
+        description,
+        img: fileName,
+        userId,
+      });
+
       return res.json(article);
     } catch (e) {
       next(ApiError.badRequest(e.message));

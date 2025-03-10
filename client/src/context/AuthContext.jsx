@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/api';
 
 export const AuthContext = createContext();
 
@@ -10,18 +9,17 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Проверка авторизации при загрузке
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const response = await api.get('/api/user/auth', {
+          const response = await fetch('http://localhost:5000/api/user/auth', {
             headers: {
-              'Authorization': `Bearer ${token}`
-            }
+              'Authorization': `Bearer ${token}`,
+            },
           });
 
-          if (response.status === 200) {
+          if (response.ok) {
             await fetchUserData();
           } else {
             localStorage.removeItem('token');
@@ -40,35 +38,47 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/api/user/login', { email, password });
+      const response = await fetch('http://localhost:5000/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
         await fetchUserData();
         return { success: true };
       } else {
-        return { success: false, error: response.data.message };
+        return { success: false, error: data.message };
       }
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: error.response?.data?.message || 'Error during login' };
+      return { success: false, error: 'Ошибка сети' };
     }
   };
 
-  const register = async (email, username, password) => {
+  const register = async (email, username, password, role) => {
     try {
-      const response = await api.post('/api/user/registration', { email, username, password });
+      const response = await fetch('http://localhost:5000/api/user/registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, username, password, role }),
+      });
 
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
-        await fetchUserData();
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data.user);
         return { success: true };
       } else {
-        return { success: false, error: response.data.message };
+        return { success: false, error: data.message };
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, error: error.response?.data?.message || 'Error during registration' };
+      return { success: false, error: 'Ошибка сети' };
     }
   };
 
@@ -80,10 +90,18 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await api.get('/api/user/get');
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-      if (response.status === 200) {
-        setUser(response.data);
+      const response = await fetch('http://localhost:5000/api/user/get', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -98,7 +116,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        isAuthenticated: !!user
+        isAuthenticated: !!user,
       }}
     >
       {children}

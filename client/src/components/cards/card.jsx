@@ -3,18 +3,21 @@ import axios from 'axios';
 import Meter from "./meter.svg";
 import Clock from "./clock.svg";
 import Eye from "./eye.svg";
+import Like from "./like.svg";
+import Repost from "./repost.svg";
+import Comment from "./comment.svg";
+import Close from "./close.svg";
 import './card.css';
 
 const Card = ({ articleId }) => {
   const [article, setArticle] = useState(null);
   const [error, setError] = useState(null);
+  const [showFullArticle, setShowFullArticle] = useState(false); 
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        console.log(`Fetching article with ID: ${articleId}`);
         const response = await axios.get(`http://localhost:5000/api/article/${articleId}`);
-        console.log('Response data:', response.data);
         setArticle(response.data);
       } catch (error) {
         console.error('Ошибка при получении статьи:', error);
@@ -54,10 +57,45 @@ const Card = ({ articleId }) => {
           </div>
         </article>
         <div className='open-story'>
-        <a href="#" className="tm-article-snippet__readmore"><span>Читать далее</span></a>
-        <div class="arrowCta"></div>
+          <a
+            href="#"
+            className="tm-article-snippet__readmore"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowFullArticle(true);
+            }}
+          >
+            <span>Читать далее</span>
+          </a>
+          <div className="arrowCta"></div>
+        </div>
+        <div className='actions'>
+          <button className='action-button'>
+            <img src={Like} alt="Like" />
+            <span>0</span>
+          </button>
+          <button className='action-button'>
+            <img src={Comment} alt="Comment" />
+            <span>0</span>
+          </button>
+          <button className='action-button'>
+            <img src={Repost} alt="Repost" />
+            <span>0</span>
+          </button>
         </div>
       </div>
+      {showFullArticle && (
+        <div className='full-article-overlay'>
+          <div className='full-article-content'>
+            <button className='close-button' onClick={() => setShowFullArticle(false)}>
+              <img src={Close} alt="Close" />
+            </button>
+            <h2>{article.title}</h2>
+            <img src={`http://localhost:5000/${article.img}`} alt={article.title} />
+            <p>{article.fullText}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

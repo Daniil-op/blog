@@ -29,7 +29,7 @@
   text-decoration: none;
   color: #999;
   cursor: pointer;
-  margin-left: 25px;
+  margin-left: 15px;
   transition: 500ms;
 }
 
@@ -37,7 +37,7 @@
   cursor: pointer;
   list-style: none;
   display: flex;
-  margin-left: 45%;
+  margin-left: 40%;
 }
 
 .navigation li a:hover {
@@ -52,7 +52,7 @@
   border-color: #FFD11A;
   border: 1px solid #FFD11A;
   background: transparent;
-  margin-left: 250px;
+  margin-left: 300px;
 }
 
 .button-contact{
@@ -106,7 +106,7 @@
   border-color: #FFD11A;
   border: 1px solid #FFD11A;
   background: transparent;
-  margin-left: 250px;
+  margin-left: 330px;
 }
 
 .button-logout p{

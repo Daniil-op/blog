@@ -1,10 +1,10 @@
 const Router = require('express');
-const router = new Router();
-
 const userRouter = require('./userRouter');
 const articleRouter = require('./articleRouter');
 
-router.use('/user', userRouter);
-router.use('/article', articleRouter);
+const router = new Router();
+
+router.use('/user', userRouter); // Префикс /user для маршрутов пользователя
+router.use('/article', articleRouter); // Префикс /article для маршрутов статей
 
 module.exports = router;

@@ -14,11 +14,16 @@ const generateJwt = (id, email, role) => {
 class UserController {
   async registration(req, res, next) {
     try {
-      const { email, username, password } = req.body;
-      console.log('Registration request data:', { email, username, password });
+      const { email, username, password, role } = req.body;
+      console.log('Registration request data:', { email, username, password, role });
 
       if (!email || !password) {
         return next(ApiError.badRequest('Некорректный email или password'));
+      }
+
+      // Проверка роли
+      if (role && !['USER', 'AUTHOR'].includes(role.toUpperCase())) {
+        return next(ApiError.badRequest('Некорректная роль. Допустимые значения: USER, AUTHOR'));
       }
 
       const candidate = await User.findOne({ where: { email } });
@@ -29,7 +34,12 @@ class UserController {
       const hashPassword = await bcrypt.hash(password, 5);
       console.log('Password hashed successfully');
 
-      const user = await User.create({ email, username, role: 'USER', password: hashPassword });
+      const user = await User.create({
+        email,
+        username,
+        role: role.toUpperCase() || 'USER', // Сохраняем роль в верхнем регистре
+        password: hashPassword,
+      });
       console.log('User created successfully:', user);
 
       const token = generateJwt(user.id, user.email, user.role);
@@ -100,12 +110,14 @@ class UserController {
 
   async create(req, res, next) {
     try {
-      // Логика создания (если нужна)
-      // Например, создание администратора или другого типа пользователя
       const { email, username, password, role } = req.body;
 
       if (!email || !password) {
         return next(ApiError.badRequest('Некорректный email или password'));
+      }
+
+      if (role && !['USER', 'AUTHOR'].includes(role)) {
+        return next(ApiError.badRequest('Некорректная роль. Допустимые значения: USER, AUTHOR'));
       }
 
       const candidate = await User.findOne({ where: { email } });
@@ -114,7 +126,12 @@ class UserController {
       }
 
       const hashPassword = await bcrypt.hash(password, 5);
-      const user = await User.create({ email, username, role: role || 'USER', password: hashPassword });
+      const user = await User.create({
+        email,
+        username,
+        role: role || 'USER', // Если роль не указана, по умолчанию 'USER'
+        password: hashPassword
+      });
 
       const token = generateJwt(user.id, user.email, user.role);
       return res.json({ token });

@@ -23,17 +23,21 @@ function Header() {
           <li><Link to="/">Лента</Link></li>
           <li><Link to="/news">Новости</Link></li>
           <li><Link to="/posts">Посты</Link></li>
-          <li><Link to="/podcasts">Подкасты</Link></li>
           {user && <li><Link to="/profile">Профиль</Link></li>}
+          {user?.role === 'AUTHOR' && (
+            <li>
+              <Link to="/create-article">Написать</Link>
+            </li>
+          )}
         </ul>
       </nav>
 
       {user ? (
-        <div className="auth-container">
+        <>
           <button className="button-logout" onClick={logout}>
             <p>Выйти</p>
           </button>
-        </div>
+        </>
       ) : (
         <>
           <button className="button-contact">

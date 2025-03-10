@@ -8,44 +8,34 @@ import Posts from "./pages/posts/posts.jsx";
 import Auth from "./pages/auth/auth.jsx";
 import Reg from "./pages/registration/registration.jsx";
 import Profile from "./pages/profile/profile.jsx";
-import Podcasts from "./pages/podcasts/podcasts.jsx";
+import CreateArticle from "./pages/create_article/create_article.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import "./index.css";
-
-function AppRoutes() {
-  return (
-    <Routes>
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/registration" element={<Reg />} />
-      <Route path="/" element={
-        <div className="wrapper">
-          <Header />
-          <div className="page-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/posts" element={<Posts />} />
-              <Route path="/podcasts" element={<Podcasts />} />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </div>
-          <Footer />
-        </div>
-      } />
-    </Routes>
-  );
-}
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <Header />
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/registration" element={<Reg />} />
+          <Route path="/create-article" element={
+            <ProtectedRoute>
+              <CreateArticle />
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={<Home />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/posts" element={<Posts />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+        </Routes>
+        <Footer />
       </AuthProvider>
     </Router>
   );

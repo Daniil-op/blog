@@ -1,0 +1,94 @@
+/* Общие стили для страницы */
+.create-article-page {
+  background-color: #ccc;
+  /* Белый фон для всей страницы */
+  min-height: 100vh;
+  /* Минимальная высота страницы */
+  padding: 40px 0;
+  /* Отступы сверху и снизу */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Стили для контейнера статьи */
+.create-article-container {
+  max-width: 600px;
+  width: 100%;
+  padding: 20px;
+  background-color: #fff;
+  /* Белый фон для контейнера */
+  border-radius: 10px;
+  color: #000;
+  /* Черный цвет текста */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Тень для контейнера */
+}
+
+/* Заголовок */
+.create-article-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #000;
+  /* Черный цвет заголовка */
+}
+
+/* Группы полей формы */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #000;
+  /* Черный цвет текста метки */
+}
+
+/* Поля ввода */
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  /* Серая граница */
+  border-radius: 5px;
+  background-color: #fff;
+  /* Белый фон полей ввода */
+  color: #000;
+  /* Черный цвет текста в полях ввода */
+}
+
+/* Текстовое поле */
+.form-group textarea {
+  height: 150px;
+  resize: vertical;
+  /* Разрешаем вертикальное изменение размера */
+}
+
+/* Кнопка отправки */
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #FFD11A;
+  /* Желтый цвет кнопки */
+  border: none;
+  border-radius: 5px;
+  color: #000;
+  /* Черный цвет текста кнопки */
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #e6b800;
+  /* Темно-желтый цвет при наведении */
+}
+
+/* Сообщение об ошибке */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 20px;
+}

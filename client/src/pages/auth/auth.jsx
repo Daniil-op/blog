@@ -28,48 +28,57 @@ const Auth = () => {
   };
 
   return (
-    <div className="sign-up-modal">
-      <Link to="/">
-        <div id="close-modal-button" onClick={() => console.log('Close modal')}>
-          <span></span>
-        </div>
-      </Link>
-      <div className="logo-container">
+    <div className="auth-container-back">
+      <div className="auth-header">
         <Link to="/" className="logotype-auth">
           <img src={Logotype} alt="logo" style={style_image} />
           <h2 className="logotype-text-auth">FutureTech</h2>
         </Link>
       </div>
+      <div className="auth-form-container">
+        <div className="auth-form">
+          <h2 className="form-title">Вход в FutureTech</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="input-container">
+              <input
+                className="email-input"
+                id="email"
+                type="email"
+                placeholder="Электронная почта"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input-container">
+              <input
+                className="password-input"
+                id="password"
+                type="password"
+                placeholder="Пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="continue-button">Войти</button>
+          </form>
 
-      <form className="details" onSubmit={handleSubmit}>
-        <div className="input-container">
-          <input
-            className="col-sm-12 email-input with-placeholder"
-            id="email"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div className="separator">ИЛИ</div>
+
+          <div className="alternative-login">
+            <button className="alt-login-button google">Войти через Google</button>
+            <button className="alt-login-button apple">Войти через Apple</button>
+            <button className="alt-login-button vk">Войти с помощью VK</button>
+          </div>
+
+          {error && <p className="error-message">{error}</p>}
+
+          <p className="auth-link">
+            Нет аккаунта? <Link to="/registration">Зарегистрируйтесь</Link>
+          </p>
         </div>
-        <div className="input-container">
-          <input
-            className="col-sm-12 password-input with-placeholder"
-            id="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <input id="sign-up-button" type="submit" value="Sign In" />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <p>
-          Don't have an account? <Link to="/registration">Sign up</Link>
-        </p>
-      </form>
+      </div>
     </div>
   );
 };
