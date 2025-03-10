@@ -7,9 +7,9 @@ const User = sequelize.define('user', {
   password: { type: DataTypes.STRING },
   role: {
     type: DataTypes.STRING,
-    defaultValue: "USER", // По умолчанию 'USER'
+    defaultValue: "USER",
     validate: {
-      isIn: [['USER', 'AUTHOR']], // Допустимые значения
+      isIn: [['USER', 'AUTHOR']], 
     },
   },
 });

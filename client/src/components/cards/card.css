@@ -1,9 +1,16 @@
+.card-wrapper {
+  margin-bottom: 20px;
+}
+
 .container-card {
   background-color: #191919;
   width: 750px;
   height: auto;
   padding: 20px 30px;
   position: relative;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .img-post_card {
@@ -17,43 +24,64 @@
   color: #bfbfbf;
   font-size: 22px;
   font-weight: 600;
-}
-
-.title-card {
-  color: #999;
+  margin: 0;
 }
 
 .picks {
   margin-top: 15px;
   display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .picks p {
-  margin-left: 7px;
+  margin: 0;
   color: #999;
+  font-size: 14px;
 }
 
 .meter,
 .clock,
 .eye {
-  width: 23px;
-}
-
-.clock {
-  margin-left: 20px;
-}
-
-.eye {
-  margin-left: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .description-card p {
   color: #bfbfbf;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.open-story {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tm-article-snippet__readmore {
+  background-color: transparent;
+  border: 1px solid #FFD11A;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tm-article-snippet__readmore:hover {
+  background-color: #FFD11A;
+  color: #000;
 }
 
 .actions {
   display: flex;
-  margin-top: 45px;
+  margin-top: 20px;
   gap: 20px;
 }
 
@@ -64,237 +92,20 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  gap: 5px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.action-button:hover {
+  color: #FFD11A;
 }
 
 .action-button img {
   width: 20px;
-  margin-right: 5px;
+  height: 20px;
 }
 
-.full-article {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.full-article-content {
-  background: #191919;
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 800px;
-  max-height: 80%;
-  overflow-y: auto;
-  position: relative;
-}
-
-.full-article-content h2 {
-  color: #bfbfbf;
-}
-
-.full-article-content img {
-  width: 100%;
-  border-radius: 10px;
-  margin: 20px 0;
-}
-
-.full-article-content p {
-  color: #bfbfbf;
-}
-
-.comments-section {
-  margin-top: 20px;
-}
-
-.comments-section h3 {
-  color: #bfbfbf;
-}
-
-.comment {
-  background: #333;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
-.comment p {
-  color: #bfbfbf;
-}
-
-.comments-section textarea {
-  width: 100%;
-  height: 100px;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #555;
-  background: #333;
-  color: #bfbfbf;
-}
-
-.comments-section button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background: #FFD11A;
-  border: none;
-  border-radius: 5px;
-  color: #000;
-  cursor: pointer;
-}
-
-.comments-section button:hover {
-  background: #e6b800;
-}
-
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.close-button img {
-  width: 24px;
-  height: 24px;
-}
-
-/* Стилизация полосы прокрутки */
-.full-article-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.full-article-content::-webkit-scrollbar-track {
-  background: #333;
-  border-radius: 4px;
-}
-
-.full-article-content::-webkit-scrollbar-thumb {
-  background: #FFD11A;
-  border-radius: 4px;
-}
-
-.full-article-content::-webkit-scrollbar-thumb:hover {
-  background: #e6b800;
-}
-
-.arrowCta {
-  display: block;
-  height: 13px;
-  width: 13px;
-  border: 11px solid transparent;
-  transform: rotate(45deg);
-  position: relative;
-  margin-left: 660px;
-  margin-bottom: 25px;
-}
-
-.arrowCta:after,
-.arrowCta:before {
-  content: "";
-  display: block;
-  height: inherit;
-  width: inherit;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.arrowCta:after {
-  border-bottom: 3px solid white;
-  border-right: 3px solid white;
-  top: 0;
-  left: 0;
-  opacity: 1;
-  animation: bottom-arrow 1.65s infinite;
-}
-
-@keyframes bottom-arrow {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-
-  45% {
-    opacity: 0;
-    transform: translate(12px, 12px);
-  }
-
-  46% {
-    opacity: 0;
-    transform: translate(-16px, -16px);
-  }
-
-  90% {
-    opacity: 1;
-    transform: translate(-6px, -6px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translate(-6px, -6px);
-  }
-}
-
-.arrowCta:before {
-  top: 0;
-  left: 0;
-  border-bottom: 3px solid white;
-  border-right: 3px solid white;
-  animation: top-arrow 1.65s infinite;
-}
-
-@keyframes top-arrow {
-  0% {
-    transform: translate(-6px, -6px);
-  }
-
-  35% {
-    transform: translate(0, 0);
-  }
-
-  90% {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-}
-
-.tm-article-snippet__readmore {
-  background-color: transparent;
-  border: 1px solid #FFD11A;
-  border-radius: 3px;
-  color: #fff;
-  cursor: pointer;
-  align-items: center;
-  display: inline-flex;
-  font-size: .8125rem;
-  min-height: 36px;
-  height: auto;
-  line-height: 1.6875rem;
-  margin-top: 10px;
-  padding: 0 13px;
-  text-decoration: none;
-  position: absolute;
-}
-
-.open-story {
-  z-index: 0;
-}
-
-/* Стили для модального окна */
 .full-article-overlay {
   position: fixed;
   top: 0;
@@ -302,31 +113,27 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.8);
-  /* Полупрозрачный черный фон */
   backdrop-filter: blur(10px);
-  /* Блюр */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  /* Убедимся, что окно поверх всего */
 }
 
 .full-article-content {
   background: #191919;
-  padding: 40px 20px 20px 20px;
-  /* Увеличиваем отступ сверху для кнопки */
+  padding: 40px;
   border-radius: 10px;
   width: 80%;
   max-width: 800px;
   max-height: 80%;
   overflow-y: auto;
-  /* Прокрутка, если контент слишком длинный */
   position: relative;
 }
 
 .full-article-content h2 {
   color: #bfbfbf;
+  font-size: 28px;
   margin-bottom: 20px;
 }
 
@@ -338,10 +145,10 @@
 
 .full-article-content p {
   color: #bfbfbf;
-  line-height: 1.6;
+  line-height: 1.8;
+  font-size: 16px;
 }
 
-/* Кнопка закрытия */
 .close-button {
   position: absolute;
   top: 10px;
@@ -350,39 +157,29 @@
   border: none;
   cursor: pointer;
   padding: 10px;
-  /* Увеличиваем область клика */
 }
 
 .close-button img {
-  width: 32px;
-  /* Увеличиваем размер иконки */
-  height: 32px;
+  width: 24px;
+  height: 24px;
   filter: invert(1);
-  /* Инвертируем цвет иконки для лучшей видимости */
   transition: transform 0.2s ease;
-  /* Анимация при наведении */
 }
 
 .close-button:hover img {
   transform: scale(1.1);
-  /* Увеличиваем иконку при наведении */
 }
 
-/* Стилизация полосы прокрутки */
-.full-article-content::-webkit-scrollbar {
-  width: 8px;
+@media (max-width: 376px) {
+  .container-card{
+    width: 160%;
+    margin-left: -22%;
+  }
 }
 
-.full-article-content::-webkit-scrollbar-track {
-  background: #333;
-  border-radius: 4px;
-}
-
-.full-article-content::-webkit-scrollbar-thumb {
-  background: #FFD11A;
-  border-radius: 4px;
-}
-
-.full-article-content::-webkit-scrollbar-thumb:hover {
-  background: #e6b800;
+@media (max-width: 415px) {
+  .container-card {
+    width: 143%;
+    margin-left: -22%;
+  }
 }

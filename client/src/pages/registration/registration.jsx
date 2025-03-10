@@ -11,7 +11,7 @@ const Reg = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('USER'); // По умолчанию 'USER'
+  const [role, setRole] = useState('USER');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Reg = () => {
     try {
       const result = await register(email, username, password, role.toUpperCase()); // Передаем роль в верхнем регистре
       if (result.success) {
-        navigate('/');
+        navigate('/auth'); // Перенаправляем на страницу авторизации
       } else {
         setError(result.error || 'Ошибка регистрации');
       }
@@ -137,6 +137,13 @@ const Reg = () => {
             disabled={isLoading}
           />
           {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div className="separator">ИЛИ</div>
+
+          <div className="alternative-login">
+            <button className="alt-login-button google">Войти через Google</button>
+            <button className="alt-login-button apple">Войти через Apple</button>
+            <button className="alt-login-button vk">Войти с помощью VK</button>
+          </div>
           <p>
             Уже есть аккаунт? <Link to="/auth">Войти</Link>
           </p>

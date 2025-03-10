@@ -49,3 +49,15 @@ ul {
 li a:hover {
   color: #FFD11A;
 }
+
+@media (max-width: 376px) {
+.asside-container{
+  display: none;
+}
+}
+
+@media (max-width: 415px) {
+  .asside-container {
+    display: none;
+  }
+}

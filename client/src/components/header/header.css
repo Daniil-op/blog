@@ -1,114 +1,185 @@
-.container{
+.header-container {
   display: flex;
-  padding: 0 100px;
-  width: auto;
-  height: 100px;
-  background-color: #191919;
+  justify-content: space-between;
   align-items: center;
-  position: -webkit-sticky;
+  padding: 0 20px;
+  width: 100%;
+  height: 80px;
+  background-color: #191919;
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-.logotype{
+.logotype {
   display: flex;
+  align-items: center;
   text-decoration: none;
 }
 
-.logotype img{
+.logotype img {
   margin-top: 2px;
 }
 
-.logotype-text{
+.logotype-text {
   margin-left: 12px;
   color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-.navigation li a{
+.navigation {
+  display: flex;
+  align-items: center;
+}
+
+.navigation ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation li {
+  margin: 0 15px;
+}
+
+.navigation li a {
   text-decoration: none;
   color: #999;
-  cursor: pointer;
-  margin-left: 15px;
-  transition: 500ms;
-}
-
-.navigation ul{
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  margin-left: 40%;
+  font-size: 1rem;
+  transition: color 0.3s ease;
 }
 
 .navigation li a:hover {
   color: #FFD11A;
 }
 
-.button-contact{
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.button-login,
+.button-logout {
   cursor: pointer;
-  width: 160px;
-  height: 56px;
-  border-radius: 10px;
-  border-color: #FFD11A;
-  border: 1px solid #FFD11A;
+  width: 120px;
+  height: 40px;
+  border-radius: 25px;
+  border: 2px solid #FFD11A;
   background: transparent;
-  margin-left: 300px;
-}
-
-.button-contact{
-  text-decoration: none;
   color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.button-contact-login{
+.button-login:hover,
+.button-logout:hover {
+  background: #FFD11A;
+  color: #191919;
+}
+
+.button-login {
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-buttons-mobile{
+  display: none;
+}
+
+/* Бургер-меню */
+.burger-menu {
+  display: none;
+  flex-direction: column;
   cursor: pointer;
-  width: 160px;
-  height: 56px;
-  border-radius: 10px;
-  border-color: #FFD11A;
-  border: 1px solid #FFD11A;
-  background: transparent;
-  margin-left: 20px;
+  z-index: 1000;
 }
 
-.button-contact-login{
-  text-decoration: none;
-  color: #fff;
+.burger-line {
+  width: 25px;
+  height: 3px;
+  background-color: #fff;
+  margin: 4px 0;
+  transition: all 0.3s ease;
 }
 
-.button-contact-login p {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Анимация для ровного крестика */
+.burger-line.open:nth-child(1) {
+  transform: rotate(45deg) translate(10px, 5px);
 }
 
-.button-contact p{
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.burger-line.open:nth-child(2) {
+  opacity: 0;
 }
 
-.button-logout{
-  cursor: pointer;
-  width: 160px;
-  height: 56px;
-  border-radius: 10px;
-  border-color: #FFD11A;
-  border: 1px solid #FFD11A;
-  background: transparent;
-  margin-left: 330px;
+.burger-line.open:nth-child(3) {
+  transform: rotate(-45deg) translate(10px, -5px);
 }
 
-.button-logout p{
-  color: #fff;
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 10px;
+    width: 100%;
+  }
+
+  .navigation {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 70%;
+    height: 100vh;
+    background-color: #191919;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 80px;
+    transition: left 0.3s ease;
+    z-index: 999;
+  }
+
+  .navigation.open {
+    left: 0;
+  }
+
+  .navigation ul {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .navigation li {
+    margin: 15px 0;
+  }
+
+  .navigation li a {
+    font-size: 1.2rem;
+    color: #fff;
+  }
+
+  .auth-buttons {
+    display: none;
+  }
+
+  .auth-buttons-mobile {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .auth-buttons-mobile .button-login,
+  .auth-buttons-mobile .button-logout {
+    width: 80%;
+    max-width: 200px;
+    font-size: 1rem;
+  }
+
+  .burger-menu {
+    display: flex;
+  }
 }

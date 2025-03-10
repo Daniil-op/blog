@@ -9,6 +9,7 @@ import Auth from "./pages/auth/auth.jsx";
 import Reg from "./pages/registration/registration.jsx";
 import Profile from "./pages/profile/profile.jsx";
 import CreateArticle from "./pages/create_article/create_article.jsx";
+import ArticlePage from "./pages/article_page/article_page.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import "./index.css";
@@ -34,6 +35,7 @@ function App() {
               <Profile />
             </ProtectedRoute>
           } />
+          <Route path="/article/:id" element={<ArticlePage />} /> 
         </Routes>
         <Footer />
       </AuthProvider>

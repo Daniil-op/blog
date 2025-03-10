@@ -4,7 +4,7 @@ const articleRouter = require('./articleRouter');
 
 const router = new Router();
 
-router.use('/user', userRouter); // Префикс /user для маршрутов пользователя
-router.use('/article', articleRouter); // Префикс /article для маршрутов статей
+router.use('/user', userRouter);
+router.use('/article', articleRouter);
 
 module.exports = router;

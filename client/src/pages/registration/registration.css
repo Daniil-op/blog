@@ -151,3 +151,8 @@
 .auth-link a:hover {
   color: #555;
 }
+
+.alternative-login{
+  margin-bottom: 20px;
+}
+
