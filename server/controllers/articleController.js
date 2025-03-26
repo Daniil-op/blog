@@ -8,13 +8,18 @@ class ArticleController {
     try {
       const { title, description } = req.body;
       const { img } = req.files;
-      const userId = req.user.id;
+      const userId = req.user.id; 
 
       if (!title || !description || !img) {
         return next(ApiError.badRequest('Все поля обязательны для заполнения'));
       }
 
-      const fileName = uuid.v4() + ".jpg";
+      // Проверяем, что файл - изображение
+      if (!img.mimetype.startsWith('image/')) {
+        return next(ApiError.badRequest('Файл должен быть изображением'));
+      }
+
+      const fileName = uuid.v4() + path.extname(img.name);
       const filePath = path.resolve(__dirname, '..', 'static', fileName);
 
       await img.mv(filePath);
@@ -23,7 +28,7 @@ class ArticleController {
         title,
         description,
         img: fileName,
-        userId,
+        userId, 
       });
 
       return res.json(article);

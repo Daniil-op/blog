@@ -32,11 +32,9 @@ const CreateArticle = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      console.log('Статья создана:', response.data);
       navigate('/');
     } catch (error) {
-      console.error('Ошибка при создании статьи:', error);
-      setError('Не удалось создать статью. Пожалуйста, попробуйте позже.');
+      setError(error.response?.data?.message || 'Ошибка при создании статьи');
     }
   };
 
