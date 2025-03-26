@@ -170,6 +170,11 @@
   transform: scale(1.1);
 }
 
+.img-post_card{
+  width: 690px;
+  height: 500px;
+}
+
 @media (max-width: 376px) {
   .container-card{
     width: 160%;

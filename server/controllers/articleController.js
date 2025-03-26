@@ -32,33 +32,27 @@ class ArticleController {
   }
 
   async getAll(req, res) {
-    const articles = await Article.findAll({
-      where: { status: 'APPROVED' },
-      include: [{ model: User, attributes: ['username'] }]
-    });
-    return res.json(articles);
+    try {
+      const articles = await Article.findAll({
+        where: { status: 'APPROVED' },
+        include: [{ model: User, attributes: ['username'] }],
+        distinct: true,  // Добавлено для исключения дубликатов
+      });
+  
+      return res.json(articles);  // Отправляем уникальные статьи
+    } catch (e) {
+      console.error('Ошибка при получении статей:', e);
+      return res.status(500).send('Ошибка при загрузке данных');
+    }
   }
 
-  async getById(req, res, next) {
+  async getApprovedArticles(req, res) {
     try {
-      const { id } = req.params;
-      const article = await Article.findOne({
-        where: { id },
-        include: [{ model: User, attributes: ['username'] }]
-      });
-
-      if (!article) {
-        return next(ApiError.notFound('Article not found'));
-      }
-
-      const user = req.user;
-      if (article.status !== 'APPROVED' && (!user || user.id !== article.userId && user.role !== 'ADMIN')) {
-        return next(ApiError.forbidden('You dont have access to this article'));
-      }
-
-      return res.json(article);
-    } catch (e) {
-      next(ApiError.badRequest(e.message));
+      const articles = await Article.findAll({ where: { status: 'APPROVED' } });
+      return res.json(articles);
+    } catch (error) {
+      console.error('Ошибка при получении статей:', error);
+      return res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
 

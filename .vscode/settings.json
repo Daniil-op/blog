@@ -1,0 +1,9 @@
+{
+  "github.copilot.advanced": {
+    "statusBarIndicator.enabled": true, // Показывает статус Copilot в строке состояния
+    "commandPaletteIcon.enabled": true, // Показывает иконку в Command Palette
+    "showCopilotInStatusBar": true // Альтернативный вариант для некоторых версий
+  },
+  "workbench.activityBar.visible": true, // Гарантирует, что сайдбар виден
+  "workbench.statusBar.visible": true // Показывает строку состояния (для доступа к Copilot)
+}

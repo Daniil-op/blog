@@ -41,7 +41,7 @@ function App() {
               <Profile />
             </ProtectedRoute>
           } />
-          <Route path="/article/:id" element={<ArticlePage />} /> 
+          <Route path="/article/:id" element={<ArticlePage />} />
         </Routes>
         <Footer />
       </AuthProvider>

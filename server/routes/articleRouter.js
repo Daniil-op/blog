@@ -7,7 +7,7 @@ const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 // Основные роуты
 router.post('/', authMiddleware, controller.create);
 router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
+router.get('/status/APPROVED', controller.getApprovedArticles);
 router.delete('/:id', authMiddleware, controller.deleteById);
 
 // Модерация

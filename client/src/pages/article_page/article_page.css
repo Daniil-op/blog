@@ -1,60 +1,85 @@
 .article-page {
-  max-width: 800px;
-  margin: 25px auto;
-  padding: 40px 20px;
-  background-color: #191919;
-  color: #bfbfbf;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 50px 30px;
+  background: linear-gradient(135deg, #1c1c1e, #252525);
+  color: #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.article-page:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .article-page h1 {
-  font-size: 36px;
-  margin-bottom: 20px;
+  font-size: 40px;
+  margin-bottom: 25px;
   color: #fff;
   text-align: center;
+  font-weight: 700;
 }
 
 .article-page img {
   width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
 .article-content {
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .article-description {
-  font-size: 20px;
-  line-height: 1.6;
+  font-size: 22px;
+  line-height: 1.7;
   margin-bottom: 30px;
-  color: #bfbfbf;
+  color: #d4d4d4;
   font-style: italic;
+  text-align: center;
 }
 
 .article-fulltext {
-  font-size: 18px;
-  line-height: 1.8;
-  color: #bfbfbf;
+  font-size: 19px;
+  line-height: 1.9;
+  color: #e0e0e0;
+  text-align: justify;
 }
 
 .article-fulltext p {
   margin-bottom: 20px;
-  text-indent: 20px;
+  text-indent: 25px;
+  transition: color 0.3s ease;
 }
 
-.article-fulltext p:first-of-type {
-  margin-top: 0;
-}
-
-.article-fulltext p:last-of-type {
-  margin-bottom: 0;
+.article-fulltext p:hover {
+  color: #f1f1f1;
 }
 
 .article-date {
-  font-size: 14px;
-  color: #999;
+  font-size: 16px;
+  color: #bbb;
   text-align: right;
-  margin-top: 30px;
+  margin-top: 35px;
+  font-style: italic;
 }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .article-page {
+    padding: 30px 20px;
+  }
+  .article-page h1 {
+    font-size: 32px;
+  }
+  .article-description {
+    font-size: 20px;
+  }
+  .article-fulltext {
+    font-size: 18px;
+  }
+}
+
