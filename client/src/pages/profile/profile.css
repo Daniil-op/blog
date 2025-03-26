@@ -1,105 +1,43 @@
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 10px;
 }
 
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+.status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
 }
 
-.profile-photo {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  margin-bottom: 10px;
+.status-badge.approved {
+  background-color: #d4edda;
+  color: #155724;
 }
 
-.profile-header h1 {
-  font-size: 24px;
-  margin: 0;
+.status-badge.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
-.profile-stats {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #ccc;
-}
-
-.stat-value {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.profile-articles,
-.profile-subscriptions {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.profile-articles h2,
-.profile-subscriptions h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.profile-articles ul,
-.profile-subscriptions ul {
-  list-style: none;
-  padding: 0;
-}
-
-.profile-articles li,
-.profile-subscriptions li {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #333;
-}
-
-.article-title {
+.reject-comment {
+  margin-top: 5px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-left: 3px solid #dc3545;
   font-size: 14px;
 }
 
-.article-likes {
+.admin-link {
+  background-color: #343a40;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
   font-size: 14px;
-  color: #ff4757;
+  margin-left: 15px;
 }
 
-.subscription-name {
-  font-size: 14px;
-}
-
-.logout-btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  color: #fff;
-  background-color: #ff4757;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logout-btn:hover {
-  background-color: #ff6b81;
+.admin-link:hover {
+  background-color: #23272b;
 }

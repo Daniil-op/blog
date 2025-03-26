@@ -1,11 +1,35 @@
 const Router = require('express');
 const router = new Router();
-const articleController = require('../controllers/articleController');
+const controller = require('../controllers/articleController');
 const authMiddleware = require('../middleware/authMiddleware');
+const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 
-router.post('/create', authMiddleware, articleController.create); // Добавляем проверку авторизации
-router.get('/get', articleController.getAll);
-router.get('/:id', articleController.getById);
-router.delete('/:id', authMiddleware, articleController.deleteById);
+// Основные роуты
+router.post('/', authMiddleware, controller.create);
+router.get('/', controller.getAll);
+router.get('/:id', controller.getById);
+router.delete('/:id', authMiddleware, controller.deleteById);
+
+// Модерация
+router.get('/admin/moderation', // Убрал '/api/article'
+  authMiddleware,
+  checkRoleMiddleware('ADMIN'),
+  controller.getForModeration
+);
+
+router.put('/admin/:id/approve', // Удалите '/api/article'
+  authMiddleware,
+  checkRoleMiddleware('ADMIN'),
+  controller.approveArticle
+);
+
+router.put('/admin/:id/reject', // Удалите '/api/article'
+  authMiddleware,
+  checkRoleMiddleware('ADMIN'),
+  controller.rejectArticle
+);
+
+// Статьи пользователя
+router.get('/user/articles', authMiddleware, controller.getUserArticles);
 
 module.exports = router;

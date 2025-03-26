@@ -44,19 +44,21 @@ export const AuthProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include' // Добавьте эту строку
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        await fetchUserData();
-        return { success: true };
-      } else {
-        return { success: false, error: data.message };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
       }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      await fetchUserData();
+      return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'Ошибка сети' };
+      return { success: false, error: error.message };
     }
   };
 

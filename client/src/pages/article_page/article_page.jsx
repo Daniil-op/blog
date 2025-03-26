@@ -5,37 +5,28 @@ import './article_page.css';
 
 const ArticlePage = () => {
   const { id } = useParams();
-  const [article, setArticle] = useState(null);
+  const [article, setArticles] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchArticle = async () => {
+    const fetchArticles = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/article/${id}`);
-        setArticle(response.data);
+        const response = await axios.get('http://localhost:5000/api/article');
+        setArticles(response.data);
         setLoading(false);
       } catch (error) {
-        console.error('Ошибка при загрузке статьи:', error);
-        setError('Не удалось загрузить статью. Пожалуйста, попробуйте позже.');
+        console.error('Ошибка при загрузке статей:', error);
+        setError('Не удалось загрузить статьи. Пожалуйста, попробуйте позже.');
         setLoading(false);
       }
     };
 
-    fetchArticle();
-  }, [id]);
+    fetchArticles();
+  }, []);
 
-  if (loading) {
-    return <div>Загрузка статьи...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!article) {
-    return <div>Статья не найдена.</div>;
-  }
+  if (loading) return <div>Загрузка статей...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="article-page">

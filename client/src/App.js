@@ -12,6 +12,7 @@ import CreateArticle from "./pages/create_article/create_article.jsx";
 import ArticlePage from "./pages/article_page/article_page.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import AdminPanel from "./pages/admin/admin.jsx";
 import "./index.css";
 
 function App() {
@@ -20,6 +21,11 @@ function App() {
       <AuthProvider>
         <Header />
         <Routes>
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminPanel />
+            </ProtectedRoute>
+          } />
           <Route path="/auth" element={<Auth />} />
           <Route path="/registration" element={<Reg />} />
           <Route path="/create-article" element={

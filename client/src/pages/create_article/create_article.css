@@ -11,6 +11,12 @@
   align-items: center;
 }
 
+.success-message {
+  color: #28a745;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
 /* Стили для контейнера статьи */
 .create-article-container {
   max-width: 600px;
