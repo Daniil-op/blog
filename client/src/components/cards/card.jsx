@@ -1,9 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaClock, FaEye, FaHeart, FaCommentAlt, FaBookmark } from 'react-icons/fa';
+import { 
+  FaClock, 
+  FaHeart, 
+  FaRegHeart,
+  FaCommentAlt,
+  FaBookmark,
+  FaRegBookmark,
+  FaSignLanguage
+} from 'react-icons/fa';
+import axios from 'axios';
 import './card.css';
 
 const Card = ({ article }) => {
+  const [likesCount, setLikesCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+
+  useEffect(() => {
+    const fetchArticleStats = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/article/${article.id}/stats`);
+        setLikesCount(response.data.likesCount);
+        setFavoritesCount(response.data.favoritesCount);
+        setCommentsCount(response.data.commentsCount);
+      } catch (error) {
+        console.error('Ошибка при получении статистики:', error);
+        // Устанавливаем значения из props, если запрос не удался
+        setLikesCount(article.likesCount || 0);
+        setFavoritesCount(article.favoritesCount || 0);
+        setCommentsCount(article.commentsCount || 0);
+      }
+    };
+
+    fetchArticleStats();
+  }, [article.id]);
+
   return (
     <div className="card-wrapper">
       <div className='card-container'>
@@ -12,6 +44,7 @@ const Card = ({ article }) => {
             <h3 className='card-title'>{article.title}</h3>
             <div className='card-meta'>
               <span className='meta-item'>
+                <FaSignLanguage className='meta-icon' />
                 <span>{article.difficulty}</span>
               </span>
               <span className='meta-item'>
@@ -28,7 +61,7 @@ const Card = ({ article }) => {
           />
           
           <div className='card-description'>
-            <p>{article.description.length > 150 ? `${article.description.slice(0, 150)}...` : article.description}</p>
+            <p>{article.description.length > 150 ? `${article.description.substring(0, 150)}...` : article.description}</p>
           </div>
         </article>
         
@@ -40,16 +73,16 @@ const Card = ({ article }) => {
             
             <div className='action-buttons'>
               <div className='action-info'>
-                <FaHeart />
-                <span>{article.likesCount || 0}</span>
+                {likesCount > 0 ? <FaHeart className="blue-icon" /> : <FaRegHeart className="blue-icon" />}
+                <span className="count">{likesCount}</span>
               </div>
               <div className='action-info'>
-                <FaCommentAlt />
-                <span>{article.commentsCount || 0}</span>
+                <FaCommentAlt className="blue-icon" />
+                <span className="count">{commentsCount}</span>
               </div>
               <div className='action-info'>
-                <FaBookmark />
-                <span>{article.favoritesCount || 0}</span>
+                {favoritesCount > 0 ? <FaBookmark className="blue-icon" /> : <FaRegBookmark className="blue-icon" />}
+                <span className="count">{favoritesCount}</span>
               </div>
             </div>
           </div>

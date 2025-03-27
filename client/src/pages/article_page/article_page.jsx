@@ -37,6 +37,8 @@ const ArticlePage = () => {
           });
           setIsLiked(actionsRes.data.isLiked);
           setIsFavorite(actionsRes.data.isFavorite);
+          setLikesCount(actionsRes.data.likesCount);
+          setFavoritesCount(actionsRes.data.favoritesCount);
         }
       } catch (error) {
         console.error('Ошибка при загрузке статьи:', error);
@@ -53,29 +55,35 @@ const ArticlePage = () => {
     if (!isAuthenticated) return;
 
     try {
-        const response = await axios.post(
-            `http://localhost:5000/api/article/${id}/like`,
-            {},
-            { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-        );
+      const response = await axios.post(
+        `http://localhost:5000/api/article/${id}/like`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
 
-        setIsLiked(response.data.liked);
-        setLikesCount((prevLikes) => (response.data.liked ? prevLikes + 1 : prevLikes - 1));
+      setIsLiked(response.data.liked);
+      setLikesCount(response.data.likesCount);
     } catch (error) {
-        console.error('Ошибка при лайке:', error);
+      console.error('Ошибка при лайке:', error);
     }
-};
+  };
 
   const handleFavorite = async () => {
     if (!isAuthenticated) return;
     
     try {
-      const response = await axios.post(`http://localhost:5000/api/article/${id}/favorite`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.post(
+        `http://localhost:5000/api/article/${id}/favorite`, 
+        {}, 
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
       
       setIsFavorite(response.data.isFavorite);
-      setFavoritesCount(response.data.favorites);
+      setFavoritesCount(response.data.favoritesCount);
     } catch (error) {
       console.error('Ошибка при добавлении в избранное:', error);
     }
@@ -86,11 +94,13 @@ const ArticlePage = () => {
     if (!newComment.trim()) return;
     
     try {
-      const response = await axios.post(`http://localhost:5000/api/article/${id}/comment`, {
-        text: newComment
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.post(
+        `http://localhost:5000/api/article/${id}/comment`,
+        { text: newComment },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
       
       setComments([response.data, ...comments]);
       setNewComment('');
@@ -166,6 +176,7 @@ const ArticlePage = () => {
               className={`action-btn ${isLiked ? 'active' : ''}`}
               onClick={handleLike}
               disabled={!isAuthenticated}
+              aria-label={isLiked ? 'Убрать лайк' : 'Поставить лайк'}
             >
               <FaHeart className="stat-icon" />
               <span>{likesCount} {isLiked ? 'Вам нравится' : 'Нравится'}</span>
@@ -175,9 +186,10 @@ const ArticlePage = () => {
               className={`action-btn ${isFavorite ? 'active' : ''}`}
               onClick={handleFavorite}
               disabled={!isAuthenticated}
+              aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
             >
               <FaBookmark className="stat-icon" />
-              <span>{favoritesCount} {isFavorite ? 'В избранном' : 'В избранное'}</span>
+              <span>{isFavorite ? 'В избранном' : 'В избранное'}</span>
             </button>
           </div>
         </footer>
@@ -194,6 +206,7 @@ const ArticlePage = () => {
               placeholder="Напишите ваш комментарий..."
               className="comment-input"
               rows="4"
+              aria-label="Текст комментария"
             />
             <button type="submit" className="comment-submit-btn">Отправить</button>
           </form>
@@ -207,7 +220,7 @@ const ArticlePage = () => {
               <div key={comment.id} className="comment-item">
                 <div className="comment-header">
                   <div className="comment-author-info">
-                    <span className="comment-author">{comment.user.username}</span>
+                    <span className="comment-author">{comment.user?.username || 'Аноним'}</span>
                     <span className="comment-date">
                       {new Date(comment.createdAt).toLocaleDateString('ru-RU', {
                         day: 'numeric',

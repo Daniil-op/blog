@@ -190,33 +190,6 @@ class ArticleController {
 
   async likeArticle(req, res, next) {
     try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const article = await Article.findByPk(id);
-        if (!article) {
-            return next(ApiError.notFound('Статья не найдена'));
-        }
-
-        const existingLike = await Like.findOne({ where: { articleId: id, userId } });
-
-        if (existingLike) {
-            await existingLike.destroy();
-            const likesCount = await Like.count({ where: { articleId: id } });
-            return res.json({ liked: false, likes: likesCount });
-        } else {
-            await Like.create({ articleId: id, userId });
-            const likesCount = await Like.count({ where: { articleId: id } });
-            return res.json({ liked: true, likes: likesCount });
-        }
-    } catch (e) {
-        console.error('Ошибка при лайке:', e);
-        next(ApiError.internal('Ошибка сервера при лайке'));
-    }
-  }
-  
-  async addToFavorites(req, res, next) {
-    try {
       const { id } = req.params;
       const userId = req.user.id;
   
@@ -225,20 +198,72 @@ class ArticleController {
         return next(ApiError.notFound('Статья не найдена'));
       }
   
-      const [favorite, created] = await Favorite.findOrCreate({
-        where: { userId, articleId: id }
-      });
+      const existingLike = await Like.findOne({ where: { articleId: id, userId } });
   
-      if (!created) {
-        await favorite.destroy();
-        return res.json({ isFavorite: false });
+      if (existingLike) {
+        await existingLike.destroy();
+        const likesCount = await Like.count({ where: { articleId: id } });
+        return res.json({ liked: false, likesCount });
+      } else {
+        await Like.create({ articleId: id, userId });
+        const likesCount = await Like.count({ where: { articleId: id } });
+        return res.json({ liked: true, likesCount });
       }
-  
-      return res.json({ isFavorite: true });
     } catch (e) {
-      next(ApiError.internal(e.message));
+      console.error('Ошибка при лайке:', e);
+      next(ApiError.internal('Ошибка сервера при лайке'));
     }
   }
+  
+async checkUserActions(req, res, next) {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const [isLiked, isFavorite] = await Promise.all([
+            Like.findOne({ where: { userId, articleId: id } }),
+            Favorite.findOne({ where: { userId, articleId: id } })
+        ]);
+
+        const likesCount = await Like.count({ where: { articleId: id } });
+        const favoritesCount = await Favorite.count({ where: { articleId: id } });
+
+        return res.json({
+            isLiked: !!isLiked,
+            isFavorite: !!isFavorite,
+            likesCount,
+            favoritesCount
+        });
+    } catch (e) {
+        next(ApiError.internal(e.message));
+    }
+}
+  
+async addToFavorites(req, res, next) {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const article = await Article.findByPk(id);
+    if (!article) {
+      return next(ApiError.notFound('Статья не найдена'));
+    }
+
+    const existingFavorite = await Favorite.findOne({ where: { userId, articleId: id } });
+
+    if (existingFavorite) {
+      await existingFavorite.destroy();
+      const favoritesCount = await Favorite.count({ where: { articleId: id } });
+      return res.json({ isFavorite: false, favoritesCount });
+    } else {
+      await Favorite.create({ userId, articleId: id });
+      const favoritesCount = await Favorite.count({ where: { articleId: id } });
+      return res.json({ isFavorite: true, favoritesCount });
+    }
+  } catch (e) {
+    next(ApiError.internal(e.message));
+  }
+}
   
   async getFavorites(req, res, next) {
     try {
@@ -302,25 +327,27 @@ class ArticleController {
       next(ApiError.internal(e.message));
     }
   }
-  
-  async checkUserActions(req, res, next) {
+
+  async getArticleStats(req, res, next) {
     try {
       const { id } = req.params;
-      const userId = req.user.id;
-  
-      const [isLiked, isFavorite] = await Promise.all([
-        Like.findOne({ where: { userId, articleId: id } }),
-        Favorite.findOne({ where: { userId, articleId: id } })
+      
+      const [likesCount, favoritesCount, commentsCount] = await Promise.all([
+        Like.count({ where: { articleId: id } }),
+        Favorite.count({ where: { articleId: id } }),
+        Comment.count({ where: { articleId: id } })
       ]);
   
       return res.json({
-        isLiked: !!isLiked,
-        isFavorite: !!isFavorite
+        likesCount,
+        favoritesCount,
+        commentsCount
       });
     } catch (e) {
       next(ApiError.internal(e.message));
     }
   }
+  
 }
 
 module.exports = new ArticleController();

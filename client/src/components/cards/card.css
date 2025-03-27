@@ -1,5 +1,4 @@
 .card-wrapper {
-  margin: 1rem 0;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -44,6 +43,75 @@
 .meta-icon {
   color: #4d8ee7;
   font-size: 0.9rem;
+}
+
+.difficulty-icon {
+  margin-right: 5px;
+  font-size: 1.1em;
+}
+
+.difficulty-icon.hard {
+  color: #ff6b6b;
+}
+
+.difficulty-icon.medium {
+  color: #feca57;
+}
+
+.difficulty-icon.easy {
+  color: #1dd1a1;
+}
+
+/* Общие стили для иконок */
+.meta-icon,
+.action-info svg {
+  color: #4da6ff; /* Голубой цвет */
+  margin-right: 5px;
+  font-size: 1em;
+}
+
+/* Активные иконки */
+.active-icon {
+  color: #4da6ff;
+}
+
+/* Контейнер мета-информации */
+.card-meta {
+  display: flex;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+/* Элементы мета-информации */
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Блок с действиями */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Элемент действия */
+.action-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+/* Кнопка "Читать далее" */
+.read-more-btn {
+  color: #4da6ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.read-more-btn:hover {
+  text-decoration: underline;
 }
 
 /* Изображение */
