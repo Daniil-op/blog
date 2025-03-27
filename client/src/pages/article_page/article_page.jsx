@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import './article_page.css';
-import { FaEye, FaHeart, FaComment, FaCalendarAlt, FaUser, FaTag, FaBookmark } from 'react-icons/fa';
+import { FaHeart, FaCalendarAlt, FaUser, FaTag, FaBookmark } from 'react-icons/fa';
 
 const ArticlePage = () => {
+  const { updateFavorites } = useFavorites();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,6 +86,7 @@ const ArticlePage = () => {
       
       setIsFavorite(response.data.isFavorite);
       setFavoritesCount(response.data.favoritesCount);
+      await updateFavorites(); // Обновляем список избранных
     } catch (error) {
       console.error('Ошибка при добавлении в избранное:', error);
     }

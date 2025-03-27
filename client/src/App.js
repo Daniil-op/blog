@@ -11,6 +11,7 @@ import Profile from "./pages/profile/profile.jsx";
 import CreateArticle from "./pages/create_article/create_article.jsx";
 import ArticlePage from "./pages/article_page/article_page.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { FavoritesProvider } from './context/FavoritesContext';
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import AdminPanel from "./pages/admin/admin.jsx";
 import "./index.css";
@@ -19,6 +20,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+      <FavoritesProvider>
         <Header />
         <Routes>
           <Route path="/admin" element={
@@ -44,6 +46,7 @@ function App() {
           <Route path="/article/:id" element={<ArticlePage />} />
         </Routes>
         <Footer />
+        </FavoritesProvider>
       </AuthProvider>
     </Router>
   );

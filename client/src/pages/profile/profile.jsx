@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useFavorites } from '../../context/FavoritesContext';
 import { FaEye, FaUser, FaEnvelope, FaCrown, FaSignOutAlt, FaBook, FaHeart, FaPen, FaClock, FaCheck, FaTimes } from 'react-icons/fa';
 import './profile.css';
 
 const Profile = () => {
+  const { favorites, updateFavorites } = useFavorites();
   const { user, logout } = useAuth();
   const [articles, setArticles] = useState([]);
-  const [favoriteArticles, setFavoriteArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('myArticles');
 
@@ -16,27 +17,20 @@ const Profile = () => {
     if (user) {
       const fetchData = async () => {
         try {
-          const [articlesRes, favoritesRes] = await Promise.all([
-            axios.get('/api/article/user/articles', {
-              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            }),
-            axios.get('/api/article/user/favorites', {
-              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            })
-          ]);
-          
+          const articlesRes = await axios.get('http://localhost:5000/user/articles', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
           setArticles(articlesRes.data);
-          setFavoriteArticles(favoritesRes.data);
+          await updateFavorites();
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
           setLoading(false);
         }
       };
-      
       fetchData();
     }
-  }, [user]);
+  }, [user, updateFavorites]);
 
   const getStatusBadge = (status) => {
     switch(status) {
@@ -65,7 +59,6 @@ const Profile = () => {
     </div>
   );
 
-  // Безопасное получение первой буквы имени пользователя
   const userInitial = user.username ? user.username.charAt(0).toUpperCase() : 'U';
 
   return (
@@ -97,7 +90,7 @@ const Profile = () => {
             )}
             
             {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
-              <Link to="/article/new" className="new-article-btn">
+              <Link to="/create-article" className="new-article-btn">
                 <FaPen /> Новая статья
               </Link>
             )}
@@ -117,7 +110,7 @@ const Profile = () => {
             className={`tab-btn ${activeTab === 'favorites' ? 'active' : ''}`}
             onClick={() => setActiveTab('favorites')}
           >
-            <FaHeart /> Избранное ({favoriteArticles.length})
+            <FaHeart /> Избранное ({favorites.length})
           </button>
         </div>
 
@@ -130,7 +123,7 @@ const Profile = () => {
                   <FaBook className="empty-icon" />
                   <p>Вы еще не создали ни одной статьи</p>
                   {user.role === 'AUTHOR' && (
-                    <Link to="/article/new" className="create-btn">
+                    <Link to="/create-article" className="create-btn">
                       Создать первую статью
                     </Link>
                   )}
@@ -175,17 +168,17 @@ const Profile = () => {
           ) : (
             <>
               <h2 className="section-title">Избранные статьи</h2>
-              {favoriteArticles.length === 0 ? (
+              {favorites.length === 0 ? (
                 <div className="empty-state">
                   <FaHeart className="empty-icon" />
                   <p>У вас пока нет избранных статей</p>
-                  <Link to="/articles" className="explore-btn">
+                  <Link to="/" className="explore-btn">
                     Найти интересные статьи
                   </Link>
                 </div>
               ) : (
                 <div className="articles-grid">
-                  {favoriteArticles.map(article => (
+                  {favorites.map(article => (
                     <div key={article.id} className="article-card">
                       <Link to={`/article/${article.id}`} className="article-link">
                         {article.img && (
