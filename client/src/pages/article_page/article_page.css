@@ -17,7 +17,7 @@
 }
 
 /* Заголовок статьи */
-.article-header {
+.article-header-page{
   margin-bottom: 1.5rem;
 }
 
@@ -25,7 +25,7 @@
   font-size: 1.8rem;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem; /* Уменьшаем отступ снизу */
   line-height: 1.3;
 }
 
@@ -35,9 +35,10 @@
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin: 0; /* Убираем все отступы */
   color: #b0b0b0;
   font-size: 0.95rem;
+  margin-top: 20px;
 }
 
 .meta-item {
@@ -52,14 +53,14 @@
 }
 
 /* Изображение статьи */
-.article-image-container {
+.article-image-container-page{
   margin: 1.5rem 0;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
 
-.article-image {
+.article-image-page {
   width: 100%;
   height: auto;
   max-height: 450px;

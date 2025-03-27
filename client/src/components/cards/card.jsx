@@ -42,11 +42,11 @@ const Card = ({ article }) => {
           <div className='card-header'>
             <h3 className='card-title'>{article.title}</h3>
             <div className='card-meta'>
-              <span className='meta-item'>
+              <span className='meta-item-card'>
                 <FaSignLanguage className='meta-icon' />
                 <span>{article.difficulty}</span>
               </span>
-              <span className='meta-item'>
+              <span className='meta-item-card'>
                 <FaClock className='meta-icon' />
                 <span>{article.readingTime} мин</span>
               </span>

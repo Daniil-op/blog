@@ -116,7 +116,7 @@ const ArticlePage = () => {
   return (
     <div className="article-container">
       <article className="article-card-page">
-        <header className="article-header">
+        <header className="article-header-page">
           <h1 className="article-title-page">{article.title}</h1>
           
           <div className="article-meta">
@@ -140,11 +140,11 @@ const ArticlePage = () => {
         </header>
 
         {article.img && (
-          <div className="article-image-container">
+          <div className="article-image-container-page">
             <img 
               src={`http://localhost:5000/${article.img}`} 
               alt={article.title} 
-              className="article-image"
+              className="article-image-page"
             />
           </div>
         )}
