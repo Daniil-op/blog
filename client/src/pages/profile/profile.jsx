@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
-import './profile.css';
 import { Link } from 'react-router-dom';
+import { FaEye, FaUser, FaEnvelope, FaCrown, FaSignOutAlt, FaBook, FaHeart, FaPen, FaClock, FaCheck, FaTimes } from 'react-icons/fa';
+import './profile.css';
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const [articles, setArticles] = useState([]);
   const [favoriteArticles, setFavoriteArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('myArticles');
 
   useEffect(() => {
     if (user) {
@@ -36,61 +38,185 @@ const Profile = () => {
     }
   }, [user]);
 
-  if (loading) return <div className="loading-container">Загрузка профиля...</div>;
+  const getStatusBadge = (status) => {
+    switch(status) {
+      case 'PENDING':
+        return <span className="status-badge pending"><FaClock /> На модерации</span>;
+      case 'APPROVED':
+        return <span className="status-badge approved"><FaCheck /> Опубликовано</span>;
+      case 'REJECTED':
+        return <span className="status-badge rejected"><FaTimes /> Отклонено</span>;
+      default:
+        return <span className="status-badge">{status}</span>;
+    }
+  };
+
+  if (loading) return (
+    <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <p>Загрузка профиля...</p>
+    </div>
+  );
+
+  if (!user) return (
+    <div className="error-container">
+      <p>Пользователь не найден. Пожалуйста, войдите в систему.</p>
+      <Link to="/login" className="login-btn">Войти</Link>
+    </div>
+  );
+
+  // Безопасное получение первой буквы имени пользователя
+  const userInitial = user.username ? user.username.charAt(0).toUpperCase() : 'U';
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h1>Профиль пользователя</h1>
-        <div className="user-info">
-          <h2>{user.username}</h2>
-          <p>{user.email}</p>
-          <p>Роль: {user.role}</p>
-          <button onClick={logout} className="logout-btn">Выйти</button>
+      <div className="profile-sidebar">
+        <div className="user-card">
+          <div className="user-avatar">
+            {userInitial}
+          </div>
+          <h2 className="user-name">{user.username || 'Пользователь'}</h2>
+          <div className="user-meta">
+            <p><FaEnvelope /> {user.email || 'Email не указан'}</p>
+            <p className={`user-role ${user.role ? user.role.toLowerCase() : 'user'}`}>
+              {user.role === 'ADMIN' ? <FaCrown /> : <FaUser />}
+              {user.role === 'ADMIN' ? 'Администратор' : 
+               user.role === 'AUTHOR' ? 'Автор' : 'Пользователь'}
+            </p>
+          </div>
           
-          {/* Добавленная кнопка для админа */}
-          {user.role === 'ADMIN' && (
-            <Link to="/admin" className="admin-panel-btn">
-              Админ-панель
-            </Link>
-          )}
+          <div className="user-actions">
+            <button onClick={logout} className="logout-btn">
+              <FaSignOutAlt /> Выйти
+            </button>
+            
+            {user.role === 'ADMIN' && (
+              <Link to="/admin" className="admin-panel-btn">
+                <FaCrown /> Админ-панель
+              </Link>
+            )}
+            
+            {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
+              <Link to="/article/new" className="new-article-btn">
+                <FaPen /> Новая статья
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="profile-sections">
-        <div className="profile-articles">
-          <h2>Мои статьи</h2>
-          {articles.length === 0 ? (
-            <p>Вы еще не создали ни одной статьи</p>
-          ) : (
-            <ul className="articles-list">
-              {articles.map(article => (
-                <li key={article.id} className="article-item">
-                  <Link to={`/article/${article.id}`} className="article-link">
-                    {article.title}
-                  </Link>
-                  <span className="article-status">{article.status}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+      <div className="profile-content">
+        <div className="profile-tabs">
+          <button 
+            className={`tab-btn ${activeTab === 'myArticles' ? 'active' : ''}`}
+            onClick={() => setActiveTab('myArticles')}
+          >
+            <FaBook /> Мои статьи ({articles.length})
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'favorites' ? 'active' : ''}`}
+            onClick={() => setActiveTab('favorites')}
+          >
+            <FaHeart /> Избранное ({favoriteArticles.length})
+          </button>
         </div>
 
-        <div className="profile-favorites">
-          <h2>Избранные статьи</h2>
-          {favoriteArticles.length === 0 ? (
-            <p>У вас пока нет избранных статей</p>
+        <div className="articles-section">
+          {activeTab === 'myArticles' ? (
+            <>
+              <h2 className="section-title">Мои статьи</h2>
+              {articles.length === 0 ? (
+                <div className="empty-state">
+                  <FaBook className="empty-icon" />
+                  <p>Вы еще не создали ни одной статьи</p>
+                  {user.role === 'AUTHOR' && (
+                    <Link to="/article/new" className="create-btn">
+                      Создать первую статью
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <div className="articles-grid">
+                  {articles.map(article => (
+                    <div key={article.id} className="article-card">
+                      <Link to={`/article/${article.id}`} className="article-link">
+                        {article.img && (
+                          <div className="article-image">
+                            <img 
+                              src={`http://localhost:5000/${article.img}`} 
+                              alt={article.title} 
+                            />
+                          </div>
+                        )}
+                        <div className="article-content">
+                          <h3 className="article-title">{article.title}</h3>
+                          <p className="article-description">{article.description.substring(0, 100)}...</p>
+                          <div className="article-meta">
+                            <span className="article-date">
+                              {new Date(article.createdAt).toLocaleDateString('ru-RU')}
+                            </span>
+                            <span className="article-views">
+                              <FaEye /> {article.views || 0}
+                            </span>
+                          </div>
+                          {getStatusBadge(article.status)}
+                          {article.status === 'REJECTED' && article.rejectComment && (
+                            <div className="reject-comment">
+                              <p>Причина отклонения: {article.rejectComment}</p>
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
-            <ul className="favorites-list">
-              {favoriteArticles.map(article => (
-                <li key={article.id} className="favorite-item">
-                  <Link to={`/article/${article.id}`} className="favorite-link">
-                    {article.title}
+            <>
+              <h2 className="section-title">Избранные статьи</h2>
+              {favoriteArticles.length === 0 ? (
+                <div className="empty-state">
+                  <FaHeart className="empty-icon" />
+                  <p>У вас пока нет избранных статей</p>
+                  <Link to="/articles" className="explore-btn">
+                    Найти интересные статьи
                   </Link>
-                  <span className="article-author">{article.user?.username}</span>
-                </li>
-              ))}
-            </ul>
+                </div>
+              ) : (
+                <div className="articles-grid">
+                  {favoriteArticles.map(article => (
+                    <div key={article.id} className="article-card">
+                      <Link to={`/article/${article.id}`} className="article-link">
+                        {article.img && (
+                          <div className="article-image">
+                            <img 
+                              src={`http://localhost:5000/${article.img}`} 
+                              alt={article.title} 
+                            />
+                          </div>
+                        )}
+                        <div className="article-content">
+                          <h3 className="article-title">{article.title}</h3>
+                          <p className="article-description">{article.description.substring(0, 100)}...</p>
+                          <div className="article-meta">
+                            <span className="article-author">
+                              <FaUser /> {article.user?.username || 'Неизвестный автор'}
+                            </span>
+                            <span className="article-date">
+                              {new Date(article.createdAt).toLocaleDateString('ru-RU')}
+                            </span>
+                            <span className="article-views">
+                              <FaEye /> {article.views || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
