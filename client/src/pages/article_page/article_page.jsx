@@ -102,10 +102,6 @@ const ArticlePage = () => {
         <footer className="article-footer">
           <div className="article-stats">
             <div className="stat-item">
-              <FaEye className="stat-icon" />
-              <span>{article.views || 0}</span>
-            </div>
-            <div className="stat-item">
               <FaHeart className="stat-icon" />
               <span>{article.likes || 0}</span>
             </div>

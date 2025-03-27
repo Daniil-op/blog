@@ -76,7 +76,7 @@ class ArticleController {
         return next(ApiError.forbidden('Доступ к статье ограничен'));
       }
   
-      // Возвращаем статью без увеличения просмотров
+      
       return res.json(article);
     } catch (e) {
       console.error('Ошибка при получении статьи:', e);

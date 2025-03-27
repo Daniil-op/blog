@@ -19,10 +19,6 @@ const Card = ({ article }) => {
                 <FaClock className='meta-icon' />
                 <span>{article.readingTime} мин</span>
               </span>
-              <span className='meta-item'>
-                <FaEye className='meta-icon' />
-                <span>{article.views}</span>
-              </span>
             </div>
           </div>
           
@@ -51,10 +47,6 @@ const Card = ({ article }) => {
               <button className='action-btn'>
                 <FaCommentAlt />
                 <span>{article.comments}</span>
-              </button>
-              <button className='action-btn'>
-                <FaShare />
-                <span>{article.reposts}</span>
               </button>
             </div>
           </div>
