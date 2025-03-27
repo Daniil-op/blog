@@ -28,6 +28,10 @@ const Article = sequelize.define('article', {
       isIn: [['PENDING', 'APPROVED', 'REJECTED']],
     },
   },
+  views: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
   rejectComment: { type: DataTypes.TEXT, allowNull: true },
   publishedAt: { type: DataTypes.DATE, allowNull: true }
 }, {

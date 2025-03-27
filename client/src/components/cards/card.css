@@ -5,7 +5,7 @@
 .container-card {
   background-color: #191919;
   width: 750px;
-  height: auto;
+  height: 740px;
   padding: 20px 30px;
   position: relative;
   border-radius: 10px;
@@ -14,14 +14,14 @@
 }
 
 .img-post_card {
-  width: 100%;
-  border-radius: 10px;
+  height: 420px;
+  width: 690px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
 .title-card p {
-  color: #bfbfbf;
+  color: #fff;
   font-size: 22px;
   font-weight: 600;
   margin: 0;
@@ -48,7 +48,7 @@
 }
 
 .description-card p {
-  color: #bfbfbf;
+  color: #fff;
   font-size: 16px;
   line-height: 1.6;
   margin: 0;
@@ -168,11 +168,6 @@
 
 .close-button:hover img {
   transform: scale(1.1);
-}
-
-.img-post_card{
-  width: 690px;
-  height: 500px;
 }
 
 @media (max-width: 376px) {

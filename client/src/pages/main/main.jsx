@@ -37,7 +37,7 @@ function Main() {
     <div className="wrapper-main">
       <div className='cards'>
         {articles.map((article) => (
-          <Card key={article.id} articleId={article.id} /> 
+          <Card key={article.id} article={article} /> 
         ))}
       </div>
       <Asside />

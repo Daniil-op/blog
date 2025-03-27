@@ -56,6 +56,34 @@ class ArticleController {
     }
   }
 
+  async getById(req, res, next) {
+    try {
+      const { id } = req.params;
+      
+      const article = await Article.findOne({
+        where: { id },
+        include: [{
+          model: User,
+          attributes: ['id', 'username', 'email']
+        }]
+      });
+  
+      if (!article) {
+        return next(ApiError.notFound('Статья не найдена'));
+      }
+  
+      if (article.status !== 'APPROVED' && (!req.user || req.user.role !== 'ADMIN')) {
+        return next(ApiError.forbidden('Доступ к статье ограничен'));
+      }
+  
+      // Возвращаем статью без увеличения просмотров
+      return res.json(article);
+    } catch (e) {
+      console.error('Ошибка при получении статьи:', e);
+      next(ApiError.internal('Ошибка сервера при получении статьи'));
+    }
+  }
+
   async deleteById(req, res, next) {
     try {
       const { id } = req.params;
