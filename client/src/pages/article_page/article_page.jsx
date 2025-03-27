@@ -1,20 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import './article_page.css';
-import { FaEye, FaHeart, FaComment, FaCalendarAlt, FaUser, FaTag } from 'react-icons/fa';
+import { FaEye, FaHeart, FaComment, FaCalendarAlt, FaUser, FaTag, FaBookmark } from 'react-icons/fa';
 
 const ArticlePage = () => {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const { id } = useParams();
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const fetchArticle = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/article/${id}`);
-        setArticle(response.data);
+        const [articleRes, commentsRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/article/${id}`),
+          axios.get(`http://localhost:5000/api/article/${id}/comments`)
+        ]);
+        
+        setArticle(articleRes.data);
+        setComments(commentsRes.data);
+        setLikesCount(articleRes.data.likesCount || 0);
+        setFavoritesCount(articleRes.data.favoritesCount || 0);
+
+        if (isAuthenticated) {
+          const actionsRes = await axios.get(`http://localhost:5000/api/article/${id}/check-actions`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          setIsLiked(actionsRes.data.isLiked);
+          setIsFavorite(actionsRes.data.isFavorite);
+        }
       } catch (error) {
         console.error('Ошибка при загрузке статьи:', error);
         setError('Не удалось загрузить статью. Пожалуйста, попробуйте позже.');
@@ -23,27 +46,69 @@ const ArticlePage = () => {
       }
     };
     
-    fetchArticle();
-  }, [id]);
+    fetchData();
+  }, [id, isAuthenticated]);
 
-  if (loading) return (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>Загрузка статьи...</p>
-    </div>
-  );
-  
+  const handleLike = async () => {
+    if (!isAuthenticated) return;
+
+    try {
+        const response = await axios.post(
+            `http://localhost:5000/api/article/${id}/like`,
+            {},
+            { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+
+        setIsLiked(response.data.liked);
+        setLikesCount((prevLikes) => (response.data.liked ? prevLikes + 1 : prevLikes - 1));
+    } catch (error) {
+        console.error('Ошибка при лайке:', error);
+    }
+};
+
+  const handleFavorite = async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      const response = await axios.post(`http://localhost:5000/api/article/${id}/favorite`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      setIsFavorite(response.data.isFavorite);
+      setFavoritesCount(response.data.favorites);
+    } catch (error) {
+      console.error('Ошибка при добавлении в избранное:', error);
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    
+    try {
+      const response = await axios.post(`http://localhost:5000/api/article/${id}/comment`, {
+        text: newComment
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      setComments([response.data, ...comments]);
+      setNewComment('');
+    } catch (error) {
+      console.error('Ошибка при отправке комментария:', error);
+    }
+  };
+
+  if (loading) return <div className="loading-container">Загрузка статьи...</div>;
   if (error) return <div className="error-container">{error}</div>;
   if (!article) return <div className="not-found-container">Статья не найдена</div>;
 
   return (
     <div className="article-container">
       <article className="article-card-page">
-        {/* Заголовок */}
         <header className="article-header">
           <h1 className="article-title-page">{article.title}</h1>
           
-          {/* Мета-информация */}
           <div className="article-meta">
             <span className="meta-item">
               <FaUser className="meta-icon" />
@@ -64,7 +129,6 @@ const ArticlePage = () => {
           </div>
         </header>
 
-        {/* Изображение статьи */}
         {article.img && (
           <div className="article-image-container">
             <img 
@@ -75,12 +139,10 @@ const ArticlePage = () => {
           </div>
         )}
 
-        {/* Описание */}
         <div className="article-description-page">
           <p>{article.description}</p>
         </div>
 
-        {/* Основной текст */}
         <div className="article-content">
           {article.fullText ? (
             article.fullText.split('\n\n').map((paragraph, index) => (
@@ -98,20 +160,71 @@ const ArticlePage = () => {
           )}
         </div>
 
-        {/* Футер со статистикой */}
         <footer className="article-footer">
-          <div className="article-stats">
-            <div className="stat-item">
+          <div className="article-actions">
+            <button 
+              className={`action-btn ${isLiked ? 'active' : ''}`}
+              onClick={handleLike}
+              disabled={!isAuthenticated}
+            >
               <FaHeart className="stat-icon" />
-              <span>{article.likes || 0}</span>
-            </div>
-            <div className="stat-item">
-              <FaComment className="stat-icon" />
-              <span>{article.comments || 0}</span>
-            </div>
+              <span>{likesCount} {isLiked ? 'Вам нравится' : 'Нравится'}</span>
+            </button>
+            
+            <button 
+              className={`action-btn ${isFavorite ? 'active' : ''}`}
+              onClick={handleFavorite}
+              disabled={!isAuthenticated}
+            >
+              <FaBookmark className="stat-icon" />
+              <span>{favoritesCount} {isFavorite ? 'В избранном' : 'В избранное'}</span>
+            </button>
           </div>
         </footer>
       </article>
+
+      <div className="comments-section">
+        <h3>Комментарии ({comments.length})</h3>
+        
+        {isAuthenticated && (
+          <form onSubmit={handleCommentSubmit} className="comment-form">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Напишите ваш комментарий..."
+              className="comment-input"
+              rows="4"
+            />
+            <button type="submit" className="comment-submit-btn">Отправить</button>
+          </form>
+        )}
+
+        <div className="comments-list">
+          {comments.length === 0 ? (
+            <p className="no-comments">Пока нет комментариев. Будьте первым!</p>
+          ) : (
+            comments.map(comment => (
+              <div key={comment.id} className="comment-item">
+                <div className="comment-header">
+                  <div className="comment-author-info">
+                    <span className="comment-author">{comment.user.username}</span>
+                    <span className="comment-date">
+                      {new Date(comment.createdAt).toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
+                </div>
+                <div className="comment-text">{comment.text}</div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };

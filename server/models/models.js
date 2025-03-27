@@ -68,10 +68,37 @@ const Article = sequelize.define('article', {
 });
 
 
-User.hasMany(Article);
-Article.belongsTo(User);
+const Favorite = sequelize.define('favorite', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
+});
+
+const Like = sequelize.define('like', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
+});
+
+const Comment = sequelize.define('comment', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  text: { type: DataTypes.TEXT, allowNull: false }
+}, {
+  timestamps: true
+});
+
+// Обновим ассоциации
+User.belongsToMany(Article, { through: Favorite });
+Article.belongsToMany(User, { through: Favorite });
+
+User.belongsToMany(Article, { through: Like });
+Article.belongsToMany(User, { through: Like });
+
+User.hasMany(Comment);
+Comment.belongsTo(User);
+Article.hasMany(Comment);
+Comment.belongsTo(Article);
 
 module.exports = {
   User,
-  Article
+  Article,
+  Favorite,
+  Like,
+  Comment
 };

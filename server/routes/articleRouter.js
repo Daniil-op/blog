@@ -30,6 +30,13 @@ router.put('/admin/:id/reject', // Удалите '/api/article'
   controller.rejectArticle
 );
 
+router.post('/:id/like', authMiddleware, controller.likeArticle);
+router.post('/:id/favorite', authMiddleware, controller.addToFavorites);
+router.get('/user/favorites', authMiddleware, controller.getFavorites);
+router.post('/:id/comment', authMiddleware, controller.addComment);
+router.get('/:id/comments', controller.getComments);
+router.get('/:id/check-actions', authMiddleware, controller.checkUserActions);
+
 // Статьи пользователя
 router.get('/user/articles', authMiddleware, controller.getUserArticles);
 

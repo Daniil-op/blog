@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaClock, FaEye, FaHeart, FaCommentAlt, FaShare, FaUser, FaChartBar } from 'react-icons/fa';
+import { FaClock, FaEye, FaHeart, FaCommentAlt, FaBookmark } from 'react-icons/fa';
 import './card.css';
 
 const Card = ({ article }) => {
@@ -12,7 +12,6 @@ const Card = ({ article }) => {
             <h3 className='card-title'>{article.title}</h3>
             <div className='card-meta'>
               <span className='meta-item'>
-                <FaChartBar className='meta-icon' />
                 <span>{article.difficulty}</span>
               </span>
               <span className='meta-item'>
@@ -40,14 +39,18 @@ const Card = ({ article }) => {
             </Link>
             
             <div className='action-buttons'>
-              <button className='action-btn'>
+              <div className='action-info'>
                 <FaHeart />
-                <span>{article.likes}</span>
-              </button>
-              <button className='action-btn'>
+                <span>{article.likesCount || 0}</span>
+              </div>
+              <div className='action-info'>
                 <FaCommentAlt />
-                <span>{article.comments}</span>
-              </button>
+                <span>{article.commentsCount || 0}</span>
+              </div>
+              <div className='action-info'>
+                <FaBookmark />
+                <span>{article.favoritesCount || 0}</span>
+              </div>
             </div>
           </div>
         </div>
