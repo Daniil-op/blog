@@ -1,5 +1,6 @@
 .card-wrapper {
   border-radius: 12px;
+  margin-bottom: 20px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -100,7 +101,8 @@
 .action-info {
   display: flex;
   align-items: center;
-  font-size: 0.9em;
+  font-size: 1em;
+  color: #fff;
 }
 
 /* Кнопка "Читать далее" */
@@ -149,10 +151,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-decoration: none;
 }
 
 .read-more-btn {
   background-color: transparent;
+  text-decoration: none;
   border: 1px solid #4d8ee7;
   color: #4d8ee7;
   padding: 0.5rem 1rem;
@@ -168,6 +172,7 @@
 .read-more-btn:hover {
   background-color: #4d8ee7;
   color: #000000;
+  text-decoration: none;
 }
 
 .action-buttons {

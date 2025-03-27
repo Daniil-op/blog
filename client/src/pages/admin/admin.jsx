@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import './admin.css';
+import { FiCheck, FiX, FiClock, FiUser, FiCalendar, FiAlertCircle, FiBookmark } from 'react-icons/fi';
 
 const AdminPanel = () => {
   const [articles, setArticles] = useState([]);
@@ -9,34 +10,51 @@ const AdminPanel = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState('pending');
   const { user } = useAuth();
 
-  // Добавьте функцию formatDate внутри компонента
   const formatDate = (dateString) => {
     if (!dateString) return 'Не опубликована';
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU');
+    return date.toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
   };
 
   useEffect(() => {
     if (user?.role === 'ADMIN') {
-      fetchPendingArticles();
+      fetchArticles();
     }
-  }, [user]);
+  }, [user, activeTab]);
 
-  const fetchPendingArticles = async () => {
+  const fetchArticles = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('http://localhost:5000/api/article/admin/moderation', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      let response;
+      if (activeTab === 'pending') {
+        response = await axios.get('http://localhost:5000/api/article/admin/moderation', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+      } else {
+        response = await axios.get('http://localhost:5000/api/article', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          params: {
+            status: 'APPROVED'
+          }
+        });
+      }
       setArticles(response.data);
     } catch (error) {
       console.error('Ошибка загрузки статей:', error);
-      setError('Не удалось загрузить статьи для модерации');
+      setError('Не удалось загрузить статьи');
     } finally {
       setLoading(false);
     }
@@ -49,7 +67,9 @@ const AdminPanel = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      fetchPendingArticles();
+      setSuccess('Статья успешно одобрена');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchArticles();
     } catch (error) {
       console.error('Ошибка одобрения:', error);
       setError('Ошибка при одобрении статьи');
@@ -72,105 +92,157 @@ const AdminPanel = () => {
           }
         }
       );
+      setSuccess('Статья отклонена');
+      setTimeout(() => setSuccess(''), 3000);
       setSelectedArticle(null);
       setRejectReason('');
-      fetchPendingArticles();
+      fetchArticles();
     } catch (error) {
       console.error('Ошибка отклонения:', error);
       setError('Ошибка при отклонении статьи');
     }
   };
 
+  const renderStatusBadge = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return <span className="status-badge pending"><FiClock /> На модерации</span>;
+      case 'APPROVED':
+        return <span className="status-badge approved"><FiCheck /> Одобрено</span>;
+      case 'REJECTED':
+        return <span className="status-badge rejected"><FiX /> Отклонено</span>;
+      default:
+        return <span className="status-badge">{status}</span>;
+    }
+  };
+
   return (
     <div className="admin-panel">
-      <h1 className="admin-title">Панель модерации статей</h1>
-      <p className="admin-subtitle">Статьи, ожидающие проверки: {articles.length}</p>
-
-      {loading && (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Загрузка статей...</p>
+      <header className="admin-header">
+        <h1 className="admin-title">Панель администратора</h1>
+        <div className="admin-tabs">
+          <button
+            className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            На модерации
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'approved' ? 'active' : ''}`}
+            onClick={() => setActiveTab('approved')}
+          >
+            Одобренные
+          </button>
         </div>
-      )}
+      </header>
 
-      {error && <div className="error-message">{error}</div>}
-
-      {!loading && articles.length === 0 && (
-        <div className="no-articles">
-          <p>Нет статей, требующих модерации</p>
-        </div>
-      )}
-
-      <div className="articles-grid">
-        {articles.map(article => (
-          <div key={article.id} className="article-card">
-            {article.img && (
-              <div className="article-image-container">
-                <img
-                  src={`http://localhost:5000/${article.img}`}
-                  alt={article.title}
-                  className="article-image"
-                  onError={(e) => {
-                    e.target.src = '/placeholder-image.jpg';
-                  }}
-                />
-              </div>
-            )}
-            <div className="article-content">
-              <h3 className="article-title">{article.title}</h3>
-              <p className="article-author">
-                <span className="label">Автор:</span> {article.User?.username || 'Неизвестен'}
-              </p>
-              <p className="article-date">
-                <span className="label">Дата создания:</span> {formatDate(article.createdAt)}
-              </p>
-              <p className="article-description">{article.description}</p>
-
-              <div className="article-actions">
-                <button
-                  onClick={() => handleApprove(article.id)}
-                  className="btn-approve"
-                  title="Одобрить публикацию"
-                >
-                  <i className="fas fa-check"></i> Одобрить
-                </button>
-                <button
-                  onClick={() => setSelectedArticle(article)}
-                  className="btn-reject"
-                  title="Отклонить публикацию"
-                >
-                  <i className="fas fa-times"></i> Отклонить
-                </button>
-              </div>
-            </div>
+      <div className="admin-content">
+        {success && (
+          <div className="alert success">
+            <FiCheck /> {success}
           </div>
-        ))}
+        )}
+        {error && (
+          <div className="alert error">
+            <FiAlertCircle /> {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Загрузка статей...</p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="empty-state">
+            <FiBookmark size={48} />
+            <h3>Нет статей для отображения</h3>
+            <p>В этой категории пока нет статей</p>
+          </div>
+        ) : (
+          <div className="articles-list">
+            {articles.map(article => (
+              <div key={article.id} className="article-card">
+                {article.img && (
+                  <div className="article-image">
+                    <img
+                      src={`http://localhost:5000/${article.img}`}
+                      alt={article.title}
+                      onError={(e) => {
+                        e.target.src = '/placeholder-article.jpg';
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="article-content">
+                  <div className="article-header">
+                    <h3 className="article-title">{article.title}</h3>
+                    {renderStatusBadge(article.status)}
+                  </div>
+                  <div className="article-meta">
+                    <span><FiUser /> {article.User?.username || 'Неизвестный автор'}</span>
+                    <span><FiCalendar /> {formatDate(article.createdAt)}</span>
+                  </div>
+                  <p className="article-description">{article.description}</p>
+                  
+                  {activeTab === 'pending' && (
+                    <div className="article-actions">
+                      <button
+                        onClick={() => handleApprove(article.id)}
+                        className="btn approve-btn"
+                      >
+                        <FiCheck /> Одобрить
+                      </button>
+                      <button
+                        onClick={() => setSelectedArticle(article)}
+                        className="btn reject-btn"
+                      >
+                        <FiX /> Отклонить
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {selectedArticle && (
         <div className="modal-overlay">
-          <div className="reject-modal">
-            <h3>Отклонение статьи: {selectedArticle.title}</h3>
-            <p>Укажите причину отклонения:</p>
-            <textarea
-              placeholder="Например: 'Статья содержит недостоверную информацию'..."
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              className="reason-textarea"
-            />
-            <div className="modal-actions">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>Отклонение статьи</h3>
+              <button 
+                onClick={() => setSelectedArticle(null)}
+                className="modal-close"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>Вы собираетесь отклонить статью: <strong>{selectedArticle.title}</strong></p>
+              <p>Пожалуйста, укажите причину отклонения:</p>
+              <textarea
+                placeholder="Например: статья содержит недостоверную информацию..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                className="reason-input"
+              />
+            </div>
+            <div className="modal-footer">
               <button
                 onClick={() => {
                   setSelectedArticle(null);
                   setRejectReason('');
                 }}
-                className="btn-cancel"
+                className="btn cancel-btn"
               >
                 Отмена
               </button>
               <button
                 onClick={handleReject}
-                className="btn-confirm-reject"
+                className="btn confirm-btn"
                 disabled={!rejectReason.trim()}
               >
                 Подтвердить отклонение

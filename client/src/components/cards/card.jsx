@@ -26,7 +26,6 @@ const Card = ({ article }) => {
         setCommentsCount(response.data.commentsCount);
       } catch (error) {
         console.error('Ошибка при получении статистики:', error);
-        // Устанавливаем значения из props, если запрос не удался
         setLikesCount(article.likesCount || 0);
         setFavoritesCount(article.favoritesCount || 0);
         setCommentsCount(article.commentsCount || 0);

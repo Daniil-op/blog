@@ -45,7 +45,15 @@ const Profile = () => {
         <div className="user-info">
           <h2>{user.username}</h2>
           <p>{user.email}</p>
+          <p>Роль: {user.role}</p>
           <button onClick={logout} className="logout-btn">Выйти</button>
+          
+          {/* Добавленная кнопка для админа */}
+          {user.role === 'ADMIN' && (
+            <Link to="/admin" className="admin-panel-btn">
+              Админ-панель
+            </Link>
+          )}
         </div>
       </div>
 
