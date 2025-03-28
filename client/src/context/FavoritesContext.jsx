@@ -10,13 +10,18 @@ export const FavoritesProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.get('/api/article/user/favorites', {
+        const response = await axios.get('http://localhost:5000/api/article/user/favorites', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFavorites(response.data);
       }
     } catch (error) {
-      console.error('Error updating favorites:', error);
+      console.error('Detailed favorites error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers
+      });
     }
   };
 

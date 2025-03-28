@@ -177,14 +177,21 @@ class ArticleController {
 
   async getUserArticles(req, res, next) {
     try {
-      const userId = req.user.id;
-      const articles = await Article.findAll({
-        where: { userId },
-        order: [['createdAt', 'DESC']]
-      });
-      return res.json(articles);
+        const userId = req.user.id;
+        const articles = await Article.findAll({
+            where: { userId },
+            order: [['createdAt', 'DESC']],
+            include: [
+                {
+                    model: User,
+                    attributes: ['username']
+                }
+            ]
+        });
+        return res.json(articles);
     } catch (e) {
-      next(ApiError.badRequest(e.message));
+        console.error('Error fetching user articles:', e);
+        next(ApiError.badRequest(e.message));
     }
   }
 
@@ -265,22 +272,30 @@ async addToFavorites(req, res, next) {
   }
 }
   
-  async getFavorites(req, res, next) {
-    try {
+async getFavorites(req, res, next) {
+  try {
       const userId = req.user.id;
       const favorites = await Favorite.findAll({
-        where: { userId },
-        include: [{
-          model: Article,
-          include: [User]
-        }]
+          where: { userId },
+          include: [
+              {
+                  model: Article,
+                  include: [
+                      {
+                          model: User,
+                          attributes: ['username']
+                      }
+                  ]
+              }
+          ]
       });
-  
+
       return res.json(favorites.map(fav => fav.article));
-    } catch (e) {
+  } catch (e) {
+      console.error('Error fetching favorites:', e);
       next(ApiError.internal(e.message));
-    }
   }
+}
   
   async addComment(req, res, next) {
     try {

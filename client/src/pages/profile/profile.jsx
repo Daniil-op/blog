@@ -11,20 +11,32 @@ const Profile = () => {
   const { user, logout } = useAuth();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('myArticles');
 
   useEffect(() => {
     if (user) {
       const fetchData = async () => {
         try {
-          const articlesRes = await axios.get('http://localhost:5000/user/articles', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          const token = localStorage.getItem('token');
+          if (!token) {
+            throw new Error('No authentication token found');
+          }
+
+          const articlesRes = await axios.get('http://localhost:5000/api/article/user/articles', {
+            headers: { Authorization: `Bearer ${token}` }
           });
           setArticles(articlesRes.data);
           await updateFavorites();
+          setLoading(false);
         } catch (error) {
-          console.error('Error fetching data:', error);
-        } finally {
+          console.error('Detailed error:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status,
+            headers: error.response?.headers
+          });
+          setError(error.response?.data?.message || 'Failed to fetch articles');
           setLoading(false);
         }
       };
@@ -182,7 +194,7 @@ const Profile = () => {
                     <div key={article.id} className="article-card">
                       <Link to={`/article/${article.id}`} className="article-link">
                         {article.img && (
-                          <div className="article-image">
+                          <div className="article-image-profile">
                             <img 
                               src={`http://localhost:5000/${article.img}`} 
                               alt={article.title} 
@@ -198,9 +210,6 @@ const Profile = () => {
                             </span>
                             <span className="article-date">
                               {new Date(article.createdAt).toLocaleDateString('ru-RU')}
-                            </span>
-                            <span className="article-views">
-                              <FaEye /> {article.views || 0}
                             </span>
                           </div>
                         </div>

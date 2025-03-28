@@ -21,6 +21,14 @@ const Article = sequelize.define('article', {
   img: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.TEXT, allowNull: false },
   fullText: { type: DataTypes.TEXT },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+        model: User,
+        key: 'id'
+    }
+  },
   type: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -89,6 +97,15 @@ Article.belongsToMany(User, { through: Favorite });
 
 User.belongsToMany(Article, { through: Like });
 Article.belongsToMany(User, { through: Like });
+
+User.hasMany(Article, { foreignKey: 'userId' });
+Article.belongsTo(User, { foreignKey: 'userId' });
+
+User.belongsToMany(Article, { through: Favorite, foreignKey: 'userId' });
+Article.belongsToMany(User, { through: Favorite, foreignKey: 'articleId' });
+
+Favorite.belongsTo(Article, { foreignKey: 'articleId' });
+Favorite.belongsTo(User, { foreignKey: 'userId' });
 
 User.hasMany(Comment);
 Comment.belongsTo(User);
