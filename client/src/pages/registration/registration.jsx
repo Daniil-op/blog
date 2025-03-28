@@ -137,13 +137,6 @@ const Reg = () => {
             disabled={isLoading}
           />
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          <div className="separator">ИЛИ</div>
-
-          <div className="alternative-login">
-            <button className="alt-login-button google">Войти через Google</button>
-            <button className="alt-login-button apple">Войти через Apple</button>
-            <button className="alt-login-button vk">Войти с помощью VK</button>
-          </div>
           <p>
             Уже есть аккаунт? <Link to="/auth">Войти</Link>
           </p>

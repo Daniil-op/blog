@@ -63,15 +63,6 @@ const Auth = () => {
             </div>
             <button type="submit" className="continue-button">Войти</button>
           </form>
-
-          <div className="separator">ИЛИ</div>
-
-          <div className="alternative-login">
-            <button className="alt-login-button google">Войти через Google</button>
-            <button className="alt-login-button apple">Войти через Apple</button>
-            <button className="alt-login-button vk">Войти с помощью VK</button>
-          </div>
-
           {error && <p className="error-message">{error}</p>}
 
           <p className="auth-link">
