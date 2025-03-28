@@ -3,7 +3,19 @@ import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../../context/FavoritesContext';
-import { FaEye, FaUser, FaEnvelope, FaCrown, FaSignOutAlt, FaBook, FaHeart, FaPen, FaClock, FaCheck, FaTimes } from 'react-icons/fa';
+import { 
+  FaEye, 
+  FaUser, 
+  FaEnvelope, 
+  FaCrown, 
+  FaSignOutAlt, 
+  FaBook, 
+  FaHeart, 
+  FaPen, 
+  FaClock, 
+  FaCheck, 
+  FaTimes 
+} from 'react-icons/fa';
 import './profile.css';
 
 const Profile = () => {
@@ -23,20 +35,25 @@ const Profile = () => {
             throw new Error('No authentication token found');
           }
 
-          const articlesRes = await axios.get('http://localhost:5000/api/article/user/articles', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setArticles(articlesRes.data);
+          // Загружаем все статьи пользователя, если он автор или админ
+          if (user.role === 'AUTHOR' || user.role === 'ADMIN') {
+            const response = await axios.get('http://localhost:5000/api/articles', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            // Фильтруем статьи, оставляя только те, которые принадлежат текущему пользователю
+            const userArticles = response.data.filter(article => 
+              article.userId === user.id
+            );
+            
+            setArticles(userArticles);
+          }
+
           await updateFavorites();
           setLoading(false);
         } catch (error) {
-          console.error('Detailed error:', {
-            message: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-            headers: error.response?.headers
-          });
-          setError(error.response?.data?.message || 'Failed to fetch articles');
+          console.error('Error fetching profile data:', error);
+          setError(error.response?.data?.message || 'Failed to fetch profile data');
           setLoading(false);
         }
       };
@@ -61,6 +78,15 @@ const Profile = () => {
     <div className="loading-container">
       <div className="loading-spinner"></div>
       <p>Загрузка профиля...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="error-container">
+      <p>{error}</p>
+      <button onClick={() => window.location.reload()} className="retry-btn">
+        Попробовать снова
+      </button>
     </div>
   );
 
@@ -112,12 +138,14 @@ const Profile = () => {
 
       <div className="profile-content">
         <div className="profile-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'myArticles' ? 'active' : ''}`}
-            onClick={() => setActiveTab('myArticles')}
-          >
-            <FaBook /> Мои статьи ({articles.length})
-          </button>
+          {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
+            <button 
+              className={`tab-btn ${activeTab === 'myArticles' ? 'active' : ''}`}
+              onClick={() => setActiveTab('myArticles')}
+            >
+              <FaBook /> Мои статьи ({articles.length})
+            </button>
+          )}
           <button 
             className={`tab-btn ${activeTab === 'favorites' ? 'active' : ''}`}
             onClick={() => setActiveTab('favorites')}
@@ -134,7 +162,7 @@ const Profile = () => {
                 <div className="empty-state">
                   <FaBook className="empty-icon" />
                   <p>Вы еще не создали ни одной статьи</p>
-                  {user.role === 'AUTHOR' && (
+                  {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
                     <Link to="/create-article" className="create-btn">
                       Создать первую статью
                     </Link>
@@ -150,12 +178,17 @@ const Profile = () => {
                             <img 
                               src={`http://localhost:5000/${article.img}`} 
                               alt={article.title} 
+                              onError={(e) => {
+                                e.target.src = '/default-article-image.jpg';
+                              }}
                             />
                           </div>
                         )}
                         <div className="article-content">
                           <h3 className="article-title">{article.title}</h3>
-                          <p className="article-description">{article.description.substring(0, 100)}...</p>
+                          <p className="article-description">
+                            {article.description?.substring(0, 100) || 'Описание отсутствует'}...
+                          </p>
                           <div className="article-meta">
                             <span className="article-date">
                               {new Date(article.createdAt).toLocaleDateString('ru-RU')}
@@ -197,13 +230,18 @@ const Profile = () => {
                           <div className="article-image-profile">
                             <img 
                               src={`http://localhost:5000/${article.img}`} 
-                              alt={article.title} 
+                              alt={article.title}
+                              onError={(e) => {
+                                e.target.src = '/default-article-image.jpg';
+                              }}
                             />
                           </div>
                         )}
                         <div className="article-content">
                           <h3 className="article-title">{article.title}</h3>
-                          <p className="article-description">{article.description.substring(0, 100)}...</p>
+                          <p className="article-description">
+                            {article.description?.substring(0, 100) || 'Описание отсутствует'}...
+                          </p>
                           <div className="article-meta">
                             <span className="article-author">
                               <FaUser /> {article.user?.username || 'Неизвестный автор'}
