@@ -13,6 +13,8 @@ const User = sequelize.define('user', {
       isIn: [['USER', 'AUTHOR', 'ADMIN']],
     },
   },
+}, {
+  timestamps: true  
 });
 
 const Article = sequelize.define('article', {
