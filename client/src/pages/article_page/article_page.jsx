@@ -156,7 +156,7 @@ const ArticlePage = () => {
           <p>{article.description}</p>
         </div>
 
-        <div className="article-content">
+        <div className="article-content-page">
           {article.fullText ? (
             article.fullText.split('\n\n').map((paragraph, index) => (
               <p key={index} className="article-paragraph">

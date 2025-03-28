@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
+  FaStar, 
   FaClock, 
   FaHeart, 
   FaRegHeart,
@@ -43,7 +44,7 @@ const Card = ({ article }) => {
             <h3 className='card-title'>{article.title}</h3>
             <div className='card-meta'>
               <span className='meta-item-card'>
-                <FaSignLanguage className='meta-icon' />
+                <FaStar  className='meta-icon' />
                 <span>{article.difficulty}</span>
               </span>
               <span className='meta-item-card'>

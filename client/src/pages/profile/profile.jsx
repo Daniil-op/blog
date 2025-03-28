@@ -161,7 +161,7 @@ const Profile = () => {
               {articles.length === 0 ? (
                 <div className="empty-state">
                   <FaBook className="empty-icon" />
-                  <p>Вы еще не создали ни одной статьи</p>
+                  <p>Вы еще не создали ни одной статьи, статьте автором и публикуйте ваши идеи</p>
                   {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
                     <Link to="/create-article" className="create-btn">
                       Создать первую статью
