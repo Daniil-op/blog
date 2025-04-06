@@ -25,6 +25,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('myArticles');
+  const [favoritesWithAuthors, setFavoritesWithAuthors] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -34,22 +35,37 @@ const Profile = () => {
           if (!token) {
             throw new Error('No authentication token found');
           }
-
-          // Загружаем все статьи пользователя, если он автор или админ
+  
           if (user.role === 'AUTHOR' || user.role === 'ADMIN') {
-            const response = await axios.get('http://localhost:5000/api/articles', {
+            const response = await axios.get('http://localhost:5000/api/article/user/articles', {
               headers: { Authorization: `Bearer ${token}` }
             });
             
-            // Фильтруем статьи, оставляя только те, которые принадлежат текущему пользователю
-            const userArticles = response.data.filter(article => 
-              article.userId === user.id
-            );
-            
-            setArticles(userArticles);
+            setArticles(response.data);
           }
-
+  
           await updateFavorites();
+          
+          // Загружаем данные авторов для избранных статей
+          if (favorites.length > 0) {
+            const favoritesWithAuthorsData = await Promise.all(
+              favorites.map(async article => {
+                try {
+                  const res = await axios.get(`http://localhost:5000/api/article/${article.id}`, {
+                    params: { includeUser: true }
+                  });
+                  return res.data;
+                } catch (error) {
+                  console.error('Error fetching article author:', error);
+                  return article; // Возвращаем оригинальную статью, если не удалось загрузить автора
+                }
+              })
+            );
+            setFavoritesWithAuthors(favoritesWithAuthorsData);
+          } else {
+            setFavoritesWithAuthors([]);
+          }
+          
           setLoading(false);
         } catch (error) {
           console.error('Error fetching profile data:', error);
@@ -59,7 +75,7 @@ const Profile = () => {
       };
       fetchData();
     }
-  }, [user, updateFavorites]);
+  }, [user, updateFavorites, favorites]);
 
   const getStatusBadge = (status) => {
     switch(status) {
@@ -149,7 +165,7 @@ const Profile = () => {
           <button 
             className={`tab-btn ${activeTab === 'favorites' ? 'active' : ''}`}
             onClick={() => setActiveTab('favorites')}
-          >
+            >
             <FaHeart /> Избранное ({favorites.length})
           </button>
         </div>
@@ -161,7 +177,7 @@ const Profile = () => {
               {articles.length === 0 ? (
                 <div className="empty-state">
                   <FaBook className="empty-icon" />
-                  <p>Вы еще не создали ни одной статьи, статьте автором и публикуйте ваши идеи</p>
+                  <p>Вы еще не создали ни одной статьи, станьте автором и публикуйте ваши идеи</p>
                   {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
                     <Link to="/create-article" className="create-btn">
                       Создать первую статью
@@ -174,7 +190,7 @@ const Profile = () => {
                     <div key={article.id} className="article-card">
                       <Link to={`/article/${article.id}`} className="article-link">
                         {article.img && (
-                          <div className="article-image">
+                          <div className="article-image-profile">
                             <img 
                               src={`http://localhost:5000/${article.img}`} 
                               alt={article.title} 
@@ -223,7 +239,7 @@ const Profile = () => {
                 </div>
               ) : (
                 <div className="articles-grid">
-                  {favorites.map(article => (
+                  {favoritesWithAuthors.map(article => (
                     <div key={article.id} className="article-card">
                       <Link to={`/article/${article.id}`} className="article-link">
                         {article.img && (

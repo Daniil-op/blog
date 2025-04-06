@@ -5,10 +5,9 @@ import {
   FaClock, 
   FaHeart, 
   FaRegHeart,
-  FaCommentAlt,
+  FaRegComment,
   FaBookmark,
-  FaRegBookmark,
-  FaSignLanguage
+  FaRegBookmark
 } from 'react-icons/fa';
 import axios from 'axios';
 import './card.css';
@@ -77,7 +76,7 @@ const Card = ({ article }) => {
                 <span className="count">{likesCount}</span>
               </div>
               <div className='action-info'>
-                <FaCommentAlt className="blue-icon" />
+                <FaRegComment className="blue-icon" />
                 <span className="count">{commentsCount}</span>
               </div>
               <div className='action-info'>

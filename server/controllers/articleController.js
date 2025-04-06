@@ -6,25 +6,37 @@ const ApiError = require('../error/ApiError');
 class ArticleController {
   async create(req, res, next) {
     try {
-      const { title, description, fullText } = req.body;
+      const { title, description, fullText, type, language, category, difficulty } = req.body;
       const { img } = req.files;
-
+  
       if (!img || !title || !description) {
         return next(ApiError.badRequest('Необходимо заполнить все обязательные поля'));
       }
-
+  
+      // Преобразуем русские значения в английские для БД
+      const typeMapping = {
+        'Статья': 'article',
+        'Пост': 'post',
+        'Новость': 'news'
+      };
+      const dbType = typeMapping[type] || 'article';
+  
       const fileName = uuid.v4() + path.extname(img.name);
       await img.mv(path.resolve(__dirname, '..', 'static', fileName));
-
+  
       const article = await Article.create({
         title,
         description,
         fullText: fullText || '',
         img: fileName,
         userId: req.user.id,
+        type: dbType,
+        language,
+        category,
+        difficulty,
         status: 'PENDING'
       });
-
+  
       return res.json(article);
     } catch (e) {
       next(ApiError.internal(e.message));
@@ -36,10 +48,11 @@ class ArticleController {
       const articles = await Article.findAll({
         where: { status: 'APPROVED' },
         include: [{ model: User, attributes: ['username'] }],
-        distinct: true,  // Добавлено для исключения дубликатов
+        order: [['createdAt', 'DESC']], // Сортировка от новых к старым
+        distinct: true
       });
   
-      return res.json(articles);  // Отправляем уникальные статьи
+      return res.json(articles);
     } catch (e) {
       console.error('Ошибка при получении статей:', e);
       return res.status(500).send('Ошибка при загрузке данных');
@@ -48,7 +61,10 @@ class ArticleController {
 
   async getApprovedArticles(req, res) {
     try {
-      const articles = await Article.findAll({ where: { status: 'APPROVED' } });
+      const articles = await Article.findAll({ 
+        where: { status: 'APPROVED' },
+        order: [['createdAt', 'DESC']] // Сортировка от новых к старым
+      });
       return res.json(articles);
     } catch (error) {
       console.error('Ошибка при получении статей:', error);
@@ -64,7 +80,9 @@ class ArticleController {
         where: { id },
         include: [{
           model: User,
-          attributes: ['id', 'username', 'email']
+          as: 'user',
+          attributes: ['id', 'username', 'email'],
+          required: false
         }]
       });
   
@@ -76,11 +94,41 @@ class ArticleController {
         return next(ApiError.forbidden('Доступ к статье ограничен'));
       }
   
-      
       return res.json(article);
     } catch (e) {
-      console.error('Ошибка при получении статьи:', e);
       next(ApiError.internal('Ошибка сервера при получении статьи'));
+    }
+  }
+  
+  async getNews(req, res, next) {
+    try {
+      const news = await Article.findAll({
+        where: { 
+          type: 'news',
+          status: 'APPROVED' 
+        },
+        include: [{ model: User, attributes: ['username'] }],
+        order: [['createdAt', 'DESC']] // Сортировка от новых к старым
+      });
+      return res.json(news);
+    } catch (e) {
+      next(ApiError.internal(e.message));
+    }
+  }
+
+  async getPosts(req, res, next) {
+    try {
+      const posts = await Article.findAll({
+        where: { 
+          type: 'post',
+          status: 'APPROVED' 
+        },
+        include: [{ model: User, attributes: ['username'] }],
+        order: [['createdAt', 'DESC']] // Сортировка от новых к старым
+      });
+      return res.json(posts);
+    } catch (e) {
+      next(ApiError.internal(e.message));
     }
   }
 
@@ -105,23 +153,17 @@ class ArticleController {
     }
   }
 
-  // Методы для админ-панели
   async getForModeration(req, res, next) {
     try {
-      console.log('Moderation request received');
-      console.log('User:', req.user);
-      console.log('User role:', req.user.role);
-
       const articles = await Article.findAll({
         where: { status: 'PENDING' },
         include: [{
           model: User,
           attributes: ['id', 'username', 'email']
         }],
-        order: [['createdAt', 'ASC']]
+        order: [['createdAt', 'ASC']] // Для модерации сортируем от старых к новым
       });
 
-      console.log('Found articles:', articles.length);
       return res.json(articles);
     } catch (e) {
       console.error('Moderation error:', e);
@@ -180,7 +222,7 @@ class ArticleController {
         const userId = req.user.id;
         const articles = await Article.findAll({
             where: { userId },
-            order: [['createdAt', 'DESC']],
+            order: [['createdAt', 'DESC']], // Сортировка от новых к старым
             include: [
                 {
                     model: User,
@@ -222,7 +264,7 @@ class ArticleController {
     }
   }
   
-async checkUserActions(req, res, next) {
+  async checkUserActions(req, res, next) {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -244,86 +286,54 @@ async checkUserActions(req, res, next) {
     } catch (e) {
         next(ApiError.internal(e.message));
     }
-}
-  
-async addToFavorites(req, res, next) {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    const article = await Article.findByPk(id);
-    if (!article) {
-      return next(ApiError.notFound('Статья не найдена'));
-    }
-
-    const existingFavorite = await Favorite.findOne({ where: { userId, articleId: id } });
-
-    if (existingFavorite) {
-      await existingFavorite.destroy();
-      const favoritesCount = await Favorite.count({ where: { articleId: id } });
-      return res.json({ isFavorite: false, favoritesCount });
-    } else {
-      await Favorite.create({ userId, articleId: id });
-      const favoritesCount = await Favorite.count({ where: { articleId: id } });
-      return res.json({ isFavorite: true, favoritesCount });
-    }
-  } catch (e) {
-    next(ApiError.internal(e.message));
   }
-}
   
-async getFavorites(req, res, next) {
-  try {
-      const userId = req.user.id;
-      const favorites = await Favorite.findAll({
-          where: { userId },
-          include: [
-              {
-                  model: Article,
-                  include: [
-                      {
-                          model: User,
-                          attributes: ['username']
-                      }
-                  ]
-              }
-          ]
-      });
-
-      return res.json(favorites.map(fav => fav.article));
-  } catch (e) {
-      console.error('Error fetching favorites:', e);
-      next(ApiError.internal(e.message));
-  }
-}
-  
-  async addComment(req, res, next) {
+  async addToFavorites(req, res, next) {
     try {
       const { id } = req.params;
-      const { text } = req.body;
       const userId = req.user.id;
-  
-      if (!text) {
-        return next(ApiError.badRequest('Текст комментария не может быть пустым'));
-      }
-  
+
       const article = await Article.findByPk(id);
       if (!article) {
         return next(ApiError.notFound('Статья не найдена'));
       }
-  
-      const comment = await Comment.create({
-        text,
-        userId,
-        articleId: id
-      });
-  
-      const commentWithUser = await Comment.findByPk(comment.id, {
-        include: [User]
-      });
-  
-      return res.json(commentWithUser);
+
+      const existingFavorite = await Favorite.findOne({ where: { userId, articleId: id } });
+
+      if (existingFavorite) {
+        await existingFavorite.destroy();
+        const favoritesCount = await Favorite.count({ where: { articleId: id } });
+        return res.json({ isFavorite: false, favoritesCount });
+      } else {
+        await Favorite.create({ userId, articleId: id });
+        const favoritesCount = await Favorite.count({ where: { articleId: id } });
+        return res.json({ isFavorite: true, favoritesCount });
+      }
     } catch (e) {
+      next(ApiError.internal(e.message));
+    }
+  }
+  
+  async getFavorites(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const favorites = await Favorite.findAll({
+        where: { userId },
+        include: [
+          {
+            model: Article,
+            include: [{
+              model: User,
+              attributes: ['id', 'username']
+            }],
+            order: [['createdAt', 'DESC']] // Сортировка от новых к старым
+          }
+        ]
+      });
+
+      return res.json(favorites.map(fav => fav.article));
+    } catch (e) {
+      console.error('Error fetching favorites:', e);
       next(ApiError.internal(e.message));
     }
   }
@@ -333,11 +343,49 @@ async getFavorites(req, res, next) {
       const { id } = req.params;
       const comments = await Comment.findAll({
         where: { articleId: id },
-        include: [User],
-        order: [['createdAt', 'DESC']]
+        include: [{
+          model: User,
+          attributes: ['id', 'username'],
+          required: false
+        }],
+        order: [['createdAt', 'DESC']] // Сортировка от новых к старым
       });
-  
+
       return res.json(comments);
+    } catch (e) {
+      next(ApiError.internal(e.message));
+    }
+  }
+
+  async addComment(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { text } = req.body;
+      const userId = req.user.id;
+
+      if (!text) {
+        return next(ApiError.badRequest('Текст комментария не может быть пустым'));
+      }
+
+      const article = await Article.findByPk(id);
+      if (!article) {
+        return next(ApiError.notFound('Статья не найдена'));
+      }
+
+      const comment = await Comment.create({
+        text,
+        userId,
+        articleId: id
+      });
+
+      const commentWithUser = await Comment.findByPk(comment.id, {
+        include: [{
+          model: User,
+          attributes: ['id', 'username']
+        }]
+      });
+
+      return res.json(commentWithUser);
     } catch (e) {
       next(ApiError.internal(e.message));
     }
@@ -362,7 +410,6 @@ async getFavorites(req, res, next) {
       next(ApiError.internal(e.message));
     }
   }
-  
 }
 
 module.exports = new ArticleController();

@@ -24,15 +24,19 @@ const ArticlePage = () => {
     const fetchData = async () => {
       try {
         const [articleRes, commentsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/article/${id}`),
-          axios.get(`http://localhost:5000/api/article/${id}/comments`)
+          axios.get(`http://localhost:5000/api/article/${id}`, {
+            params: { includeUser: true }
+          }),
+          axios.get(`http://localhost:5000/api/article/${id}/comments`, {
+            params: { includeUser: true }
+          })
         ]);
         
         setArticle(articleRes.data);
         setComments(commentsRes.data);
         setLikesCount(articleRes.data.likesCount || 0);
         setFavoritesCount(articleRes.data.favoritesCount || 0);
-
+  
         if (isAuthenticated) {
           const actionsRes = await axios.get(`http://localhost:5000/api/article/${id}/check-actions`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -86,7 +90,7 @@ const ArticlePage = () => {
       
       setIsFavorite(response.data.isFavorite);
       setFavoritesCount(response.data.favoritesCount);
-      await updateFavorites(); // Обновляем список избранных
+      await updateFavorites();
     } catch (error) {
       console.error('Ошибка при добавлении в избранное:', error);
     }
@@ -123,10 +127,10 @@ const ArticlePage = () => {
           <h1 className="article-title-page">{article.title}</h1>
           
           <div className="article-meta">
-            <span className="meta-item">
-              <FaUser className="meta-icon" />
-              {article.user?.username || 'Неизвестный автор'}
-            </span>
+          <span className="meta-item">
+            <FaUser className="meta-icon" />
+            {article.user?.username || 'Неизвестный автор'}
+          </span>
             <span className="meta-item">
               <FaCalendarAlt className="meta-icon" />
               {new Date(article.createdAt).toLocaleDateString('ru-RU', {
@@ -214,7 +218,7 @@ const ArticlePage = () => {
             <button type="submit" className="comment-submit-btn">Отправить</button>
           </form>
         )}
-
+        
         <div className="comments-list">
           {comments.length === 0 ? (
             <p className="no-comments">Пока нет комментариев. Будьте первым!</p>
@@ -223,7 +227,9 @@ const ArticlePage = () => {
               <div key={comment.id} className="comment-item">
                 <div className="comment-header">
                   <div className="comment-author-info">
-                    <span className="comment-author">{comment.user?.username || 'Аноним'}</span>
+                    <span className="comment-author">
+                      {comment.user?.username || 'Аноним'}
+                    </span>
                     <span className="comment-date">
                       {new Date(comment.createdAt).toLocaleDateString('ru-RU', {
                         day: 'numeric',

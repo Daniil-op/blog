@@ -10,6 +10,8 @@ router.get('/', controller.getAll);
 router.get('/:id', controller.getById);
 router.get('/status/APPROVED', controller.getApprovedArticles);
 router.delete('/:id', authMiddleware, controller.deleteById);
+router.get('/type/news', controller.getNews);
+router.get('/type/post', controller.getPosts);
 
 // Модерация
 router.get('/admin/moderation', // Убрал '/api/article'

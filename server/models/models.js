@@ -4,7 +4,7 @@ const sequelize = require('../db');
 const User = sequelize.define('user', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   email: { type: DataTypes.STRING, unique: true },
-  username: { type: DataTypes.STRING },
+  username: { type: DataTypes.STRING, allowNull: false }, 
   password: { type: DataTypes.STRING },
   role: {
     type: DataTypes.STRING,
@@ -34,28 +34,28 @@ const Article = sequelize.define('article', {
   type: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'статья', // Добавлено значение по умолчанию
+    defaultValue: 'статья', 
     validate: {
-      isIn: [['статья', 'пост', 'новость']],
+      isIn: [['article', 'post', 'news']],
     },
   },
   language: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'русский', // Добавлено значение по умолчанию
+    defaultValue: 'русский',
     validate: {
-      isIn: [['русский', 'английский']],
+      isIn: [['Русский', 'Английский']],
     },
   },
   category: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'разное', // Можно задать категорию по умолчанию
+    defaultValue: 'разное', 
   },
   difficulty: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'средний', // Добавлено значение по умолчанию
+    defaultValue: 'средний',
     validate: {
       isIn: [['простой', 'средний', 'сложный']],
     },
@@ -66,10 +66,6 @@ const Article = sequelize.define('article', {
     validate: {
       isIn: [['PENDING', 'APPROVED', 'REJECTED']],
     },
-  },
-  views: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
   },
   rejectComment: { type: DataTypes.TEXT, allowNull: true },
   publishedAt: { type: DataTypes.DATE, allowNull: true }
