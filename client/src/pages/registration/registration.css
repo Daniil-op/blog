@@ -1,5 +1,60 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:700,300');
 
+.password-validation {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.password-validation p {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.password-validation .valid {
+  color: #4CAF50;
+}
+
+.password-validation .invalid {
+  color: #f44336;
+}
+
+.password-validation p:before {
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.password-toggle:hover .eye-icon {
+  opacity: 1;
+}
+
+.password-input {
+  padding-right: 35px !important;
+}
+
 .sign-up-modal-background {
   background: #fff !important;
   width: 100%;
@@ -154,5 +209,12 @@
 
 .alternative-login{
   margin-bottom: 20px;
+}
+
+.auth-p a{
+  font-size: 0.9em;
+  color: #111;
+  text-align: center;
+  text-decoration: underline;
 }
 

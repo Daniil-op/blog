@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logotype from "../../components/header/logo.svg";
 import UserIcon from "./icons/user.svg";
 import AuthorIcon from "./icons/author.svg";
+import EyeIcon from "./icons/eye.svg";
+import EyeSlashIcon from "./icons/eye-slash.svg";
 import { useAuth } from '../../context/AuthContext';
 import './registration.css';
 
@@ -14,6 +16,13 @@ const Reg = () => {
   const [role, setRole] = useState('USER');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState({
+    length: false,
+    digit: false,
+    uppercase: false,
+    specialChar: false
+  });
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -22,10 +31,27 @@ const Reg = () => {
     height: 30
   };
 
+  useEffect(() => {
+    // Валидация пароля при изменении
+    setPasswordErrors({
+      length: password.length >= 8,
+      digit: /\d/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    });
+  }, [password]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    // Проверка валидации пароля
+    if (!Object.values(passwordErrors).every(Boolean)) {
+      setError('Пароль не соответствует требованиям');
+      setIsLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Пароли не совпадают');
@@ -34,9 +60,9 @@ const Reg = () => {
     }
 
     try {
-      const result = await register(email, username, password, role.toUpperCase()); // Передаем роль в верхнем регистре
+      const result = await register(email, username, password, role.toUpperCase());
       if (result.success) {
-        navigate('/auth'); // Перенаправляем на страницу авторизации
+        navigate('/auth');
       } else {
         setError(result.error || 'Ошибка регистрации');
       }
@@ -46,6 +72,10 @@ const Reg = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const togglePasswordsVisibility = () => {
+    setShowPasswords(!showPasswords);
   };
 
   return (
@@ -106,29 +136,66 @@ const Reg = () => {
               disabled={isLoading}
             />
           </div>
-          <div className="input-container">
+          <div className="input-container password-input-container">
             <input
               className="col-sm-12 password-input with-placeholder"
               id="password"
-              type="password"
+              type={showPasswords ? "text" : "password"}
               placeholder="Пароль"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
             />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={togglePasswordsVisibility}
+            >
+              <img 
+                src={showPasswords ? EyeIcon : EyeSlashIcon} 
+                alt={showPasswords ? "Скрыть пароль" : "Показать пароль"} 
+                className="eye-icon"
+              />
+            </button>
           </div>
-          <div className="input-container">
+
+          <div className="input-container password-input-container">
             <input
               className="col-sm-12 password-input with-placeholder"
               id="confirmPassword"
-              type="password"
+              type={showPasswords ? "text" : "password"}
               placeholder="Повторите пароль"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               disabled={isLoading}
             />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={togglePasswordsVisibility}
+            >
+              <img 
+                src={showPasswords ? EyeIcon : EyeSlashIcon} 
+                alt={showPasswords ? "Скрыть пароль" : "Показать пароль"} 
+                className="eye-icon"
+              />
+            </button>
+          </div>
+          <div className="password-validation">
+            <p className={passwordErrors.length ? 'valid' : 'invalid'}>
+              {passwordErrors.length ? '✓' : '✗'} Минимум 8 символов
+            </p>
+            <p className={passwordErrors.digit ? 'valid' : 'invalid'}>
+              {passwordErrors.digit ? '✓' : '✗'} Содержит цифры
+            </p>
+            <p className={passwordErrors.uppercase ? 'valid' : 'invalid'}>
+              {passwordErrors.uppercase ? '✓' : '✗'} Содержит заглавные буквы
+            </p>
+            <p className={passwordErrors.specialChar ? 'valid' : 'invalid'}>
+              {passwordErrors.specialChar ? '✓' : '✗'} Содержит спецсимволы
+            </p>
           </div>
           <input
             id="sign-up-button"
@@ -137,7 +204,7 @@ const Reg = () => {
             disabled={isLoading}
           />
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          <p>
+          <p className='auth-p'>
             Уже есть аккаунт? <Link to="/auth">Войти</Link>
           </p>
         </form>
