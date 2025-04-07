@@ -43,22 +43,6 @@ class ArticleController {
     }
   }
 
-  async getAll(req, res) {
-    try {
-      const articles = await Article.findAll({
-        where: { status: 'APPROVED' },
-        include: [{ model: User, attributes: ['username'] }],
-        order: [['createdAt', 'DESC']], // Сортировка от новых к старым
-        distinct: true
-      });
-  
-      return res.json(articles);
-    } catch (e) {
-      console.error('Ошибка при получении статей:', e);
-      return res.status(500).send('Ошибка при загрузке данных');
-    }
-  }
-
   async getApprovedArticles(req, res) {
     try {
       const articles = await Article.findAll({ 
@@ -153,17 +137,56 @@ class ArticleController {
     }
   }
 
+  async getAll(req, res) {
+    try {
+      const { status, includeUser } = req.query;
+      
+      const includeOptions = [];
+      if (includeUser) {
+        includeOptions.push({ 
+          model: User, 
+          as: 'user', // Убедимся, что используем правильный alias
+          attributes: ['id', 'username'] 
+        });
+      }
+  
+      const whereOptions = {};
+      if (status) {
+        whereOptions.status = status;
+      }
+  
+      const articles = await Article.findAll({
+        where: whereOptions,
+        include: includeOptions,
+        order: [['createdAt', 'DESC']],
+      });
+  
+      return res.json(articles);
+    } catch (e) {
+      console.error('Ошибка при получении статей:', e);
+      return res.status(500).send('Ошибка при загрузке данных');
+    }
+  }
+  
   async getForModeration(req, res, next) {
     try {
       const articles = await Article.findAll({
         where: { status: 'PENDING' },
         include: [{
           model: User,
+          as: 'user', // Явно указываем alias
           attributes: ['id', 'username', 'email']
         }],
-        order: [['createdAt', 'ASC']] // Для модерации сортируем от старых к новым
+        order: [['createdAt', 'ASC']]
       });
-
+  
+      // Добавим лог для проверки
+      console.log('Moderation articles:', JSON.stringify(articles.map(a => ({
+        id: a.id,
+        title: a.title,
+        user: a.user ? {username: a.user.username} : null
+      }))));
+  
       return res.json(articles);
     } catch (e) {
       console.error('Moderation error:', e);

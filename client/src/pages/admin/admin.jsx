@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import './admin.css';
-import { FiCheck, FiX, FiClock, FiUser, FiCalendar, FiAlertCircle, FiBookmark } from 'react-icons/fi';
+import { FiCheck, FiX, FiClock, FiUser, FiCalendar, FiAlertCircle, FiBookmark, FiTrash2 } from 'react-icons/fi';
 
 const AdminPanel = () => {
   const [articles, setArticles] = useState([]);
@@ -47,10 +47,12 @@ const AdminPanel = () => {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
           params: {
-            status: 'APPROVED'
+            status: 'APPROVED',
+            includeUser: true // Добавляем параметр для включения данных пользователя
           }
         });
       }
+      console.log('Received articles data:', response.data); // Добавляем лог для отладки
       setArticles(response.data);
     } catch (error) {
       console.error('Ошибка загрузки статей:', error);
@@ -100,6 +102,22 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Ошибка отклонения:', error);
       setError('Ошибка при отклонении статьи');
+    }
+  };
+
+  const handleDelete = async (articleId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/article/${articleId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      setSuccess('Статья успешно удалена');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchArticles();
+    } catch (error) {
+      console.error('Ошибка удаления:', error);
+      setError('Ошибка при удалении статьи');
     }
   };
 
@@ -180,27 +198,36 @@ const AdminPanel = () => {
                     {renderStatusBadge(article.status)}
                   </div>
                   <div className="article-meta">
-                    <span><FiUser /> {article.User?.username || 'Неизвестный автор'}</span>
+                    <span><FiUser /> {article.user?.username || 'Неизвестный автор'}</span>
                     <span><FiCalendar /> {formatDate(article.createdAt)}</span>
                   </div>
                   <p className="article-description">{article.description}</p>
                   
-                  {activeTab === 'pending' && (
-                    <div className="article-actions">
+                  <div className="article-actions">
+                    {activeTab === 'pending' ? (
+                      <>
+                        <button
+                          onClick={() => handleApprove(article.id)}
+                          className="btn approve-btn"
+                        >
+                          <FiCheck /> Одобрить
+                        </button>
+                        <button
+                          onClick={() => setSelectedArticle(article)}
+                          className="btn reject-btn"
+                        >
+                          <FiX /> Отклонить
+                        </button>
+                      </>
+                    ) : (
                       <button
-                        onClick={() => handleApprove(article.id)}
-                        className="btn approve-btn"
+                        onClick={() => handleDelete(article.id)}
+                        className="btn delete-btn"
                       >
-                        <FiCheck /> Одобрить
+                        <FiTrash2 /> Удалить
                       </button>
-                      <button
-                        onClick={() => setSelectedArticle(article)}
-                        className="btn reject-btn"
-                      >
-                        <FiX /> Отклонить
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

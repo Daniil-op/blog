@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  FaTag,
   FaStar, 
   FaClock, 
   FaHeart, 
@@ -50,6 +51,10 @@ const Card = ({ article }) => {
                 <FaClock className='meta-icon' />
                 <span>{article.readingTime} мин</span>
               </span>
+              <span className="meta-item-card">
+              <FaTag className="meta-icon" />
+              {article.difficulty || 'Без категории'}
+            </span>
             </div>
           </div>
           
