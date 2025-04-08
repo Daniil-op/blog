@@ -37,7 +37,7 @@ const CreateArticle = () => {
     formData.append('fullText', fullText);
     formData.append('img', imageFile);
     formData.append('category', category);
-    formData.append('level', level);
+    formData.append('difficulty', level);
     formData.append('type', type);
     formData.append('language', language);
 

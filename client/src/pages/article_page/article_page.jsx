@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import './article_page.css';
-import { FaHeart, FaCalendarAlt, FaUser, FaTag, FaBookmark } from 'react-icons/fa';
+import { FaHeart, FaCalendarAlt, FaUser, FaTag, FaBookmark, FaClock } from 'react-icons/fa';
 
 const ArticlePage = () => {
   const { updateFavorites } = useFavorites();
@@ -138,6 +138,10 @@ const ArticlePage = () => {
                 month: 'long',
                 year: 'numeric'
               })}
+            </span>
+            <span className="meta-item">
+              <FaClock className="meta-icon" />
+              {article.readingTime} мин. чтения
             </span>
             <span className="meta-item">
               <FaTag className="meta-icon" />

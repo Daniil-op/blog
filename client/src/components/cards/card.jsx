@@ -13,6 +13,15 @@ import {
 import axios from 'axios';
 import './card.css';
 
+const difficultyMapping = {
+  'простой': 'Простой',
+  'средний': 'Средний',
+  'сложный': 'Сложный',
+  'simple': 'Простой', // на случай английских значений
+  'medium': 'Средний',
+  'hard': 'Сложный'
+};
+
 const Card = ({ article }) => {
   const [likesCount, setLikesCount] = useState(0);
   const [favoritesCount, setFavoritesCount] = useState(0);
@@ -36,6 +45,16 @@ const Card = ({ article }) => {
     fetchArticleStats();
   }, [article.id]);
 
+  // Нормализуем значение сложности
+  const getDisplayDifficulty = () => {
+    if (!article.difficulty) return 'Средний';
+    
+    const lowerCaseDifficulty = article.difficulty.toLowerCase();
+    return difficultyMapping[lowerCaseDifficulty] || article.difficulty;
+  };
+
+  const displayDifficulty = getDisplayDifficulty();
+
   return (
     <div className="card-wrapper">
       <div className='card-container'>
@@ -44,17 +63,17 @@ const Card = ({ article }) => {
             <h3 className='card-title'>{article.title}</h3>
             <div className='card-meta'>
               <span className='meta-item-card'>
-                <FaStar  className='meta-icon' />
-                <span>{article.difficulty}</span>
+                <FaStar className='meta-icon' />
+                <span>{displayDifficulty}</span>
               </span>
               <span className='meta-item-card'>
                 <FaClock className='meta-icon' />
                 <span>{article.readingTime} мин</span>
               </span>
               <span className="meta-item-card">
-              <FaTag className="meta-icon" />
-              {article.difficulty || 'Без категории'}
-            </span>
+                <FaTag className="meta-icon" />
+                <span>{article.category || 'Без категории'}</span>
+              </span>
             </div>
           </div>
           

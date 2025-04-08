@@ -38,11 +38,6 @@ function Header() {
           <li><Link to="/news" onClick={toggleMenu}>Новости</Link></li>
           <li><Link to="/posts" onClick={toggleMenu}>Посты</Link></li>
           {user && <li><Link to="/profile" onClick={toggleMenu}>Профиль</Link></li>}
-          {user?.role === 'AUTHOR' && (
-            <li>
-              <Link to="/create-article" onClick={toggleMenu}>Написать</Link>
-            </li>
-          )}
         </ul>
 
         {/* Кнопка "Войти" в меню */}

@@ -52,12 +52,16 @@ const Article = sequelize.define('article', {
     allowNull: false,
     defaultValue: 'разное', 
   },
+  readingTime: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 5 // значение по умолчанию в минутах
+  },
   difficulty: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'средний',
     validate: {
-      isIn: [['простой', 'средний', 'сложный']],
+      isIn: [['Простой', 'Средний', 'Сложный']],
     },
   },
   status: {

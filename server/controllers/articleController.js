@@ -12,8 +12,7 @@ class ArticleController {
       if (!img || !title || !description) {
         return next(ApiError.badRequest('Необходимо заполнить все обязательные поля'));
       }
-  
-      // Преобразуем русские значения в английские для БД
+      
       const typeMapping = {
         'Статья': 'article',
         'Пост': 'post',
@@ -23,6 +22,10 @@ class ArticleController {
   
       const fileName = uuid.v4() + path.extname(img.name);
       await img.mv(path.resolve(__dirname, '..', 'static', fileName));
+  
+      // Рассчитываем время прочтения (средняя скорость 200 слов в минуту)
+      const wordCount = (fullText || '').split(/\s+/).length;
+      const readingTime = Math.max(1, Math.ceil(wordCount / 200));
   
       const article = await Article.create({
         title,
@@ -34,7 +37,8 @@ class ArticleController {
         language,
         category,
         difficulty,
-        status: 'PENDING'
+        status: 'PENDING',
+        readingTime // Добавляем время прочтения
       });
   
       return res.json(article);

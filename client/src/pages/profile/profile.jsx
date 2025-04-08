@@ -142,8 +142,7 @@ const Profile = () => {
                 <FaCrown /> Админ-панель
               </Link>
             )}
-            
-            {(user.role === 'AUTHOR' || user.role === 'ADMIN') && (
+            {(user.role === 'AUTHOR') && (
               <Link to="/create-article" className="new-article-btn">
                 <FaPen /> Новая статья
               </Link>
@@ -208,9 +207,6 @@ const Profile = () => {
                           <div className="article-meta">
                             <span className="article-date">
                               {new Date(article.createdAt).toLocaleDateString('ru-RU')}
-                            </span>
-                            <span className="article-views">
-                              <FaEye /> {article.views || 0}
                             </span>
                           </div>
                           {getStatusBadge(article.status)}
